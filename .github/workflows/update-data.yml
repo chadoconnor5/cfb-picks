@@ -1,0 +1,65 @@
+name: Update data
+
+# Rebuilds docs/data (games, lines, scores, weather, the pre-written context for Claude prompts)
+# and commits it, which redeploys the website. Times are UTC; Pacific is UTC-7 (UTC-8 after early November).
+on:
+  schedule:
+    - cron: "23 18 * * 1-4"   # Mon-Thu ~11 AM Pacific: lines and forecasts
+    - cron: "17 17 * * 5"     # Fri ~10 AM Pacific: last refresh before the Friday-noon pick deadline
+    - cron: "41 7 * * 0"      # Sun ~12:40 AM Pacific: Saturday's early scores
+    - cron: "11 16 * * 0"     # Sun ~9 AM Pacific: all of Saturday's scores
+  workflow_dispatch:
+    inputs:
+      weeks:
+        description: "Extra regular-season weeks to (re)build, e.g. 7 or 6,7 (optional)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      # The history warehouse and CFBD response cache live here between runs (saves API calls).
+      - uses: actions/cache@v4
+        with:
+          path: .cache
+          key: site-cache-${{ github.run_id }}
+          restore-keys: site-cache-
+
+      - name: Build data
+        env:
+          CFBD_API_KEY: ${{ secrets.CFBD_KEY }}
+        run: python build_site.py --weeks "${{ github.event.inputs.weeks }}"
+
+      - name: Commit data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data
+          for f in backtest/calibration.json backtest/hfa.json backtest/report.md; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "Update data $(date -u +'%Y-%m-%d %H:%M') UTC"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi

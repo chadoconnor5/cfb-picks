@@ -1,0 +1,115 @@
+[
+  {
+    "season": 2022,
+    "date": "2022-11-05",
+    "away": "Ohio State",
+    "home": "Northwestern",
+    "reported": "Heavy rain; wind ~20 mph sustained, gusts reported 40-47 mph",
+    "reported_impact": "Stroud 10/26 for 76 yds, season low; 'wreaked havoc on any throw meant to go more than 5 yards'. Ohio State leaned on the run (Williams 26-111, Stroud 79 rush yds). Won 21-7.",
+    "expected": "Pass-heavy Ohio State exposed; low total",
+    "sources": [
+      "https://www.cbssports.com/college-football/news/ohio-state-vs-northwestern-score-takeaways-no-2-buckeyes-overcome-sloppy-play-weather-to-remain-unbeaten/live",
+      "https://www.elevenwarriors.com/ohio-state-football/2022/11/134567/three-key-stats-cj-stroud-running-ohio-state-wins-ugly-in-bad-weather-northwestern",
+      "https://buckeyehuddle.com/2022/11/06/buckeyes-dealt-with-almost-impossible-conditions-in-win-over-northwestern/"
+    ]
+  },
+  {
+    "season": 2016,
+    "date": "2016-10-08",
+    "away": "Notre Dame",
+    "home": "NC State",
+    "reported": "Hurricane Matthew: torrential rain, gusty wind, waterlogged field",
+    "reported_impact": "Both offenses ineffective; 10 fumbles (4 lost), 5 combined turnovers. NC State won 10-3.",
+    "expected": "Low total; turnovers up",
+    "sources": [
+      "https://www.si.com/college/2016/10/08/notre-dame-nc-state-rain-hurricane-matthew-video-highlights",
+      "https://www.cbsnews.com/amp/chicago/news/nc-state-beat-notre-dame-10-3-as-matthew-churns-through-nc"
+    ]
+  },
+  {
+    "season": 2023,
+    "date": "2023-11-25",
+    "away": "Iowa State",
+    "home": "Kansas State",
+    "reported": "Heavy snow throughout; crews clearing yard lines during play",
+    "reported_impact": "COUNTEREXAMPLE: 42-35 Iowa State. Becht threw only 12 passes but for 230 yds and 3 TD (big plays); Sama ran for 276. K-State's Howard 24/48 for 288.",
+    "expected": "Rules would lean under; actual shootout via explosive plays",
+    "sources": [
+      "https://secure-www.cbssports.com/college-football/gametracker/recap/NCAAF_20231125_IOWAST@KSTATE",
+      "https://www.kstatesports.com/news/2023/11/25/football-k-state-falls-to-iowa-state-42-35"
+    ]
+  },
+  {
+    "season": 2017,
+    "date": "2017-12-09",
+    "away": "Army",
+    "home": "Navy",
+    "reported": "Steady snow, snow-covered field (Philadelphia, neutral site)",
+    "reported_impact": "Three combined pass attempts; Navy's Perry ran for 250. Army won 14-13; Navy missed a 48-yard FG at the end.",
+    "expected": "Two option teams: weather barely changes their plan (insulated); low total",
+    "sources": [
+      "https://www.militarytimes.com/off-duty/military-sports/army-navy-game/2017/12/09/two-in-a-row-black-knights-edge-mids-14-13-in-a-snow-covered-classic/",
+      "https://www.boston.com/sports/sports-news/2017/12/09/snowy-field-goal-try-wide-on-final-play-army-holds-off-navy-14-13/"
+    ]
+  },
+  {
+    "season": 2017,
+    "date": "2017-11-18",
+    "away": "Minnesota",
+    "home": "Northwestern",
+    "reported": "Wind and sleet, muddy field",
+    "reported_impact": "Minnesota QB Demry Croft completed two passes with three interceptions.",
+    "expected": "Passing collapses; low total",
+    "sources": [
+      "https://dailynorthwestern.com/2017/11/18/sports/football-wildcats-embrace-muck-sloppy-win-minnesota"
+    ]
+  },
+  {
+    "season": 2022,
+    "away": "Iowa",
+    "home": "Purdue",
+    "reported": "Gusty conditions (needs verification: which game and how windy)",
+    "reported_impact": "O'Connell 20/43 for 168 yds, 2 INT.",
+    "expected": "Pass-heavy Purdue exposed",
+    "needs_verification": true,
+    "sources": [
+      "https://www.hammerandrails.com/2022/11/18/23467004/purdue-football-purdue-vs-mother-nature"
+    ]
+  },
+  {
+    "season": 2023,
+    "date": "2023-09-16",
+    "away": "Florida State",
+    "home": "Boston College",
+    "reported": "Hurricane Lee forecast: wind and rain expected, no roof",
+    "reported_impact": "Pre-game coverage only; outcome to come from data. A test of forecast vs actual conditions.",
+    "expected": "Unknown: depends on whether Lee's wind actually arrived",
+    "sources": [
+      "https://foxweather.com/lifestyle/fsu-boston-college-hurricane-lee-impacts",
+      "https://rotogrinders.com/articles/florida-state-boston-college-weather-3941094"
+    ]
+  },
+  {
+    "season": 2023,
+    "away": "Appalachian State",
+    "home": "Troy",
+    "reported": "Sun Belt Championship forecast: 1-2 inches of rain",
+    "reported_impact": "Pre-game forecast only; outcome to come from data.",
+    "expected": "Rules would lean under",
+    "sources": [
+      "https://www.actionnetwork.com/ncaaf/college-football-weather-forecast-appalachian-state-vs-troy-rain-saturday-december-2"
+    ]
+  },
+  {
+    "season": 2024,
+    "away": "Vanderbilt",
+    "home": "South Carolina",
+    "reported": "Rain, sloppy field (season unconfirmed)",
+    "reported_impact": "Turnovers by both teams in the first half; Vanderbilt offense stalled late.",
+    "expected": "Turnovers up",
+    "sources": [
+      "https://www.si.com/college/vanderbilt/football/vanderbilt-commodores-struggles-in-rainy-matchup-lose-to-south-carolina"
+    ],
+    "needs_verification": true
+  }
+]

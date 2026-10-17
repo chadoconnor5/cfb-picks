@@ -1,0 +1,6 @@
+flask>=3.0
+anthropic>=1.15
+python-dotenv>=1.0
+requests>=2.31
+pytest>=8.0
+numpy>=1.26

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CFB Picks</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    try { const t = localStorage.getItem("cfbPicks.theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
+  </script>
+</head>
+<body>
+  <header>
+    <h1>CFB Picks</h1>
+    <nav>
+      <button class="tab active" data-tab="slate">Slate</button>
+      <button class="tab" data-tab="pool">Pool</button>
+      <button class="tab" data-tab="league">League</button>
+      <button class="tab" data-tab="review">Review</button>
+      <button class="tab" data-tab="record">Record</button>
+      <button class="tab" data-tab="teams">Teams</button>
+      <button id="themeToggle" class="theme-toggle small" title="Switch between dark, light and system theme">🌙 Dark</button>
+    </nav>
+  </header>
+
+  <section class="controls">
+    <label>Season <input id="season" type="number" min="2000" max="2100"></label>
+    <label>Week <input id="week" type="number" min="1" max="20"></label>
+    <label>Type
+      <select id="seasonType">
+        <option value="regular">Regular</option>
+        <option value="postseason">Postseason</option>
+      </select>
+    </label>
+    <button id="loadBtn">Load</button>
+    <button id="syncBtn" title="Pull games, current lines, and scores from CFBD">Sync slate &amp; lines</button>
+    <button id="gradeBtn" title="Pull final scores and grade picks">Pull scores &amp; grade</button>
+    <label class="filter" title="When you ask Claude for a pick, search for injury news first (if the stored report is over 12h old)">
+      <input id="searchInjuries" type="checkbox" checked> Search injuries before predicting</label>
+    <label class="filter" title="Weekly web search per team: coaching staff and their records, hot seat, rumors, NIL estimates">
+      <input id="searchIntel" type="checkbox" checked> Program intel (weekly)</label>
+    <label class="filter"><input id="onlyLines" type="checkbox" checked> Only games with lines</label>
+    <label class="filter"><input id="search" type="search" placeholder="Filter teams"></label>
+  </section>
+
+  <div id="status" role="status"></div>
+
+  <main>
+    <div id="slate" class="panel"></div>
+    <div id="pool" class="panel hidden"></div>
+    <div id="league" class="panel hidden"></div>
+    <div id="review" class="panel hidden"></div>
+    <div id="record" class="panel hidden"></div>
+    <div id="teams" class="panel hidden"></div>
+  </main>
+
+  <template id="gameTpl">
+    <article class="game">
+      <div class="game-head">
+        <div class="teams">
+          <div class="team away"></div>
+          <div class="team home"></div>
+        </div>
+        <div class="meta"></div>
+      </div>
+      <div class="lines"></div>
+      <div class="conditions"></div>
+      <details class="more-wrap">
+        <summary>More context (situation, home field, coaching, intel)</summary>
+        <div class="more"></div>
+      </details>
+      <details class="injuries-wrap">
+        <summary>Injuries</summary>
+        <div class="injuries"></div>
+      </details>
+      <details class="notes-wrap">
+        <summary>Notes</summary>
+        <textarea class="notes" rows="3" placeholder="Injuries, weather, motivation, etc."></textarea>
+        <button class="save-notes small">Save notes</button>
+      </details>
+      <div class="claude"></div>
+      <div class="pick"></div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

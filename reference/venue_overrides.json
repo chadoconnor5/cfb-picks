@@ -1,0 +1,5 @@
+{
+  "North Dakota State": {"venue": "Fargodome", "dome": true, "note": "Indoor stadium in Fargo: weather does not affect home games."},
+  "Syracuse": {"venue": "JMA Wireless Dome", "dome": true, "note": "Indoor stadium: weather does not affect home games."},
+  "UTSA": {"venue": "Alamodome", "dome": true, "note": "Indoor stadium: weather does not affect home games."}
+}

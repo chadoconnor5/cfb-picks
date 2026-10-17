@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CFB Picks</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏈</text></svg>">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    try { const t = localStorage.getItem("cfbPicks.theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
+  </script>
+</head>
+<body>
+  <header>
+    <h1>CFB Picks</h1>
+    <nav>
+      <button class="tab active" data-tab="slate">Slate</button>
+      <button class="tab" data-tab="pool">Pool</button>
+      <button class="tab" data-tab="league">League</button>
+      <button class="tab" data-tab="review">Review</button>
+      <button class="tab" data-tab="record">Record</button>
+      <button class="tab" data-tab="teams">Teams</button>
+      <button id="themeToggle" class="theme-toggle small" title="Switch between dark, light and system theme">🌙 Dark</button>
+    </nav>
+  </header>
+
+  <section class="controls">
+    <label>Season <input id="season" type="number" min="2000" max="2100"></label>
+    <label>Week <input id="week" type="number" min="1" max="20"></label>
+    <label>Type
+      <select id="seasonType">
+        <option value="regular">Regular</option>
+        <option value="postseason">Postseason</option>
+      </select>
+    </label>
+    <button id="loadBtn">Load</button>
+    <button id="syncBtn" title="Reload the latest game data (lines, scores, weather). GitHub rebuilds it a few times a week.">Refresh data</button>
+    <label class="filter"><input id="onlyLines" type="checkbox" checked> Only games with lines</label>
+    <label class="filter"><input id="search" type="search" placeholder="Filter teams"></label>
+    <span class="data-info hint" id="dataInfo"></span>
+    <span class="backup">
+      <button id="backupBtn" class="small" title="Download everything saved in this browser (cards, picks, league entries, reviews)">Backup</button>
+      <button id="restoreBtn" class="small" title="Load a backup file (replaces what's saved in this browser)">Restore</button>
+      <input id="restoreFile" type="file" accept="application/json,.json" hidden>
+    </span>
+  </section>
+
+  <div id="status" role="status"></div>
+
+  <main>
+    <div id="slate" class="panel"></div>
+    <div id="pool" class="panel hidden"></div>
+    <div id="league" class="panel hidden"></div>
+    <div id="review" class="panel hidden"></div>
+    <div id="record" class="panel hidden"></div>
+    <div id="teams" class="panel hidden"></div>
+  </main>
+
+  <template id="gameTpl">
+    <article class="game">
+      <div class="game-head">
+        <div class="teams">
+          <div class="team away"></div>
+          <div class="team home"></div>
+        </div>
+        <div class="meta"></div>
+      </div>
+      <div class="lines"></div>
+      <div class="conditions"></div>
+      <details class="more-wrap">
+        <summary>Everything Claude gets (analytics, weather, history, situation, home field, coaching)</summary>
+        <div class="more"></div>
+      </details>
+      <details class="notes-wrap">
+        <summary>Notes</summary>
+        <textarea class="notes" rows="3" placeholder="Injuries, weather, motivation, etc. (added to Claude's prompt)"></textarea>
+        <button class="save-notes small">Save notes</button>
+      </details>
+      <div class="claude"></div>
+      <div class="pick"></div>
+    </article>
+  </template>
+
+  <script src="logic.js"></script>
+  <script src="store.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

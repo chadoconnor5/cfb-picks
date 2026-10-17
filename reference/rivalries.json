@@ -1,0 +1,360 @@
+{
+ "_note": "Major FBS rivalries (team names as CFBD spells them). Used to flag rivalry games; extend freely.",
+ "rivalries": [
+  [
+   "Ohio State",
+   "Michigan",
+   "The Game"
+  ],
+  [
+   "Alabama",
+   "Auburn",
+   "Iron Bowl"
+  ],
+  [
+   "Alabama",
+   "Tennessee",
+   "Third Saturday in October"
+  ],
+  [
+   "Army",
+   "Navy",
+   "Army-Navy"
+  ],
+  [
+   "Oklahoma",
+   "Texas",
+   "Red River Rivalry"
+  ],
+  [
+   "Florida",
+   "Georgia",
+   "Florida-Georgia"
+  ],
+  [
+   "Clemson",
+   "South Carolina",
+   "Palmetto Bowl"
+  ],
+  [
+   "Florida",
+   "Florida State",
+   "Sunshine Showdown"
+  ],
+  [
+   "Miami",
+   "Florida State",
+   "Miami-FSU"
+  ],
+  [
+   "USC",
+   "UCLA",
+   "Crosstown"
+  ],
+  [
+   "USC",
+   "Notre Dame",
+   "Jeweled Shillelagh"
+  ],
+  [
+   "Stanford",
+   "California",
+   "Big Game"
+  ],
+  [
+   "Oregon",
+   "Oregon State",
+   "Civil War"
+  ],
+  [
+   "Washington",
+   "Washington State",
+   "Apple Cup"
+  ],
+  [
+   "Michigan",
+   "Michigan State",
+   "Paul Bunyan Trophy"
+  ],
+  [
+   "Minnesota",
+   "Wisconsin",
+   "Paul Bunyan's Axe"
+  ],
+  [
+   "Iowa",
+   "Iowa State",
+   "Cy-Hawk"
+  ],
+  [
+   "Iowa",
+   "Minnesota",
+   "Floyd of Rosedale"
+  ],
+  [
+   "Indiana",
+   "Purdue",
+   "Old Oaken Bucket"
+  ],
+  [
+   "Kansas",
+   "Kansas State",
+   "Sunflower Showdown"
+  ],
+  [
+   "Ole Miss",
+   "Mississippi State",
+   "Egg Bowl"
+  ],
+  [
+   "LSU",
+   "Alabama",
+   "LSU-Alabama"
+  ],
+  [
+   "LSU",
+   "Ole Miss",
+   "Magnolia Bowl"
+  ],
+  [
+   "Texas",
+   "Texas A&M",
+   "Lone Star Showdown"
+  ],
+  [
+   "Georgia",
+   "Georgia Tech",
+   "Clean, Old-Fashioned Hate"
+  ],
+  [
+   "North Carolina",
+   "NC State",
+   "UNC-NC State"
+  ],
+  [
+   "North Carolina",
+   "Duke",
+   "Victory Bell"
+  ],
+  [
+   "Virginia",
+   "Virginia Tech",
+   "Commonwealth Clash"
+  ],
+  [
+   "Pittsburgh",
+   "West Virginia",
+   "Backyard Brawl"
+  ],
+  [
+   "Penn State",
+   "Pittsburgh",
+   "Keystone Classic"
+  ],
+  [
+   "Notre Dame",
+   "Navy",
+   "Notre Dame-Navy"
+  ],
+  [
+   "Notre Dame",
+   "Michigan",
+   "Notre Dame-Michigan"
+  ],
+  [
+   "Tennessee",
+   "Kentucky",
+   "Tennessee-Kentucky"
+  ],
+  [
+   "Tennessee",
+   "Florida",
+   "Tennessee-Florida"
+  ],
+  [
+   "Auburn",
+   "Georgia",
+   "Deep South's Oldest Rivalry"
+  ],
+  [
+   "Arizona",
+   "Arizona State",
+   "Territorial Cup"
+  ],
+  [
+   "BYU",
+   "Utah",
+   "Holy War"
+  ],
+  [
+   "Colorado",
+   "Colorado State",
+   "Rocky Mountain Showdown"
+  ],
+  [
+   "Oklahoma",
+   "Oklahoma State",
+   "Bedlam"
+  ],
+  [
+   "Baylor",
+   "TCU",
+   "Revivalry"
+  ],
+  [
+   "Louisville",
+   "Kentucky",
+   "Governor's Cup"
+  ],
+  [
+   "Cincinnati",
+   "Louisville",
+   "Keg of Nails"
+  ],
+  [
+   "Nebraska",
+   "Iowa",
+   "Heroes Game"
+  ],
+  [
+   "Wisconsin",
+   "Iowa",
+   "Heartland Trophy"
+  ],
+  [
+   "Northwestern",
+   "Illinois",
+   "Land of Lincoln Trophy"
+  ],
+  [
+   "Air Force",
+   "Army",
+   "Commander-in-Chief's Trophy"
+  ],
+  [
+   "Air Force",
+   "Navy",
+   "Commander-in-Chief's Trophy"
+  ],
+  [
+   "Miami (OH)",
+   "Ohio",
+   "Battle of the Bricks"
+  ],
+  [
+   "Toledo",
+   "Bowling Green",
+   "Battle of I-75"
+  ],
+  [
+   "Western Michigan",
+   "Central Michigan",
+   "Michigan MAC Trophy"
+  ],
+  [
+   "Central Michigan",
+   "Eastern Michigan",
+   "Michigan MAC Trophy"
+  ],
+  [
+   "Fresno State",
+   "San Diego State",
+   "Oil Can"
+  ],
+  [
+   "Houston",
+   "Rice",
+   "Bayou Bucket"
+  ],
+  [
+   "SMU",
+   "TCU",
+   "Iron Skillet"
+  ],
+  [
+   "Texas",
+   "Arkansas",
+   "Texas-Arkansas"
+  ],
+  [
+   "Arkansas",
+   "LSU",
+   "Battle for the Golden Boot"
+  ],
+  [
+   "Missouri",
+   "Kansas",
+   "Border War"
+  ],
+  [
+   "Missouri",
+   "Arkansas",
+   "Battle Line Rivalry"
+  ],
+  [
+   "Boston College",
+   "Syracuse",
+   "BC-Syracuse"
+  ],
+  [
+   "Wake Forest",
+   "North Carolina",
+   "Wake-UNC"
+  ],
+  [
+   "Utah",
+   "Utah State",
+   "Battle of the Brothers"
+  ],
+  [
+   "Nevada",
+   "UNLV",
+   "Fremont Cannon"
+  ],
+  [
+   "New Mexico",
+   "New Mexico State",
+   "Rio Grande Rivalry"
+  ],
+  [
+   "Hawai'i",
+   "Air Force",
+   "Kuter Trophy"
+  ],
+  [
+   "Boise State",
+   "Fresno State",
+   "Milk Can"
+  ],
+  [
+   "Memphis",
+   "Ole Miss",
+   "Memphis-Ole Miss"
+  ],
+  [
+   "South Florida",
+   "UCF",
+   "War on I-4"
+  ],
+  [
+   "East Carolina",
+   "Marshall",
+   "ECU-Marshall"
+  ],
+  [
+   "Marshall",
+   "Ohio",
+   "Battle for the Bell"
+  ],
+  [
+   "Appalachian State",
+   "Georgia Southern",
+   "Deeper Than Hate"
+  ],
+  [
+   "Louisiana",
+   "UL Monroe",
+   "Battle on the Bayou"
+  ]
+ ]
+}
