@@ -96,6 +96,39 @@ from backtest import collect  # noqa: E402
 BOX_KEYS = ("points", "rush_yds", "pass_yds", "total_yds", "sacks", "turnovers")
 
 
+# ---------- slow or failing weather services must not stall the build ----------
+
+class Breaker:
+    """After 3 failures in a row (or past the time budget) stop calling a service for the rest of the run."""
+
+    def __init__(self, name, fn, budget_s):
+        self.name, self.fn, self.fails, self.off = name, fn, 0, False
+        self.deadline = time.time() + budget_s
+
+    def __call__(self, *a, **k):
+        if self.off or time.time() > self.deadline:
+            if not self.off:
+                print(f"  {self.name}: time budget used up; skipping the rest this run", flush=True)
+            self.off = True
+            raise RuntimeError(f"{self.name} skipped this run")
+        try:
+            out = self.fn(*a, **k)
+            self.fails = 0
+            return out
+        except Exception:
+            self.fails += 1
+            if self.fails >= 3:
+                self.off = True
+                print(f"  {self.name}: failing repeatedly; skipping it for the rest of this run", flush=True)
+            raise
+
+
+import weather  # noqa: E402
+
+collect.cached_archive = Breaker("weather archive (past games)", collect.cached_archive, 15 * 60)
+weather.forecast_as_of = Breaker("as-issued forecasts (replays)", weather.forecast_as_of, 25 * 60)
+
+
 def now_utc():
     return datetime.now(timezone.utc)
 
@@ -389,9 +422,6 @@ def main(argv=None):
     if not args.skip_history:
         for w in refresh_history(season, history_seasons):
             print(f"  history warning: {w}")
-        msg = maybe_analyze()
-        if msg:
-            print(f"  {msg}")
 
     with db.tx() as conn:
         for i, (week, stype) in enumerate(targets):
@@ -399,6 +429,11 @@ def main(argv=None):
     write_prompts()
     write_reference(season)
     write_index(season, current, started)
+
+    if not args.skip_history:   # optional extras last, so the weeks are always written first
+        msg = maybe_analyze()
+        if msg:
+            print(f"  {msg}", flush=True)
     print(f"CFBD calls this run: {CALLS['live']} live, {CALLS['cached']} from cache "
           f"(history: {collect.stats['cfbd_live']} live).")
 
