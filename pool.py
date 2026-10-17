@@ -21,11 +21,12 @@ from grading import grade_ats, grade_ou
 
 GAME_RE = re.compile(
     r"^\s*(?P<away>[^@\n]+?)\s*(?:@|\bvs\.?)\s*(?P<home>[^(\n]+?)\s*\((?P<spread>[+-]?\s*\d+(?:\.\d+)?|PK|pk|Pick)\)\s*"
-    r"(?:o\s*/\s*u\s*(?P<total>\d+(?:\.\d+)?))?\s*(?:\*+\s*(?P<weight>\d+)\s*-?\s*Point\s+Game\s*\*+)?\s*$", re.I)
+    r"(?:o\s*/\s*u\s*(?P<total>\d+(?:\.\d+)?))?\s*(?:(?:mon|tues|wednes|thurs|fri|satur|sun)day\s*)?(?:\*+\s*(?P<weight>\d+)\s*-?\s*Point\s+Game\s*\*+)?\s*(?:(?:mon|tues|wednes|thurs|fri|satur|sun)day\s*)?$", re.I)
 PICK_RE = re.compile(r"^\s*(?P<team>[^,\n]+?)\s*(?:,\s*(?P<ou>O|U|Over|Under))?\s*$", re.I)
 QUESTION_RE = re.compile(r"^\s*(?P<n>\d+)[.)]\s*(?P<text>.+)$")
 ANSWER_RE = re.compile(r"^\s*(OVER|UNDER|O|U)\s*$", re.I)
 LINE_RE = re.compile(r"over\s+or\s+under\s+(?P<line>\d+(?:\.\d+)?)\s*(?P<unit>[a-z ]*)", re.I)
+COMBINED_RE = re.compile(r"\b(both teams|the teams|two teams|teams (?:to )?combine|combined between|total between|between (?:the|both) (?:two )?teams)\b")
 TIEBREAK_RE = re.compile(r"combined\s+score\s*[-:]?\s*(?P<n>\d+)?", re.I)
 
 STAT_WORDS = [
@@ -163,7 +164,8 @@ def interpret_prop(prop, week_games, ref=None):
     stat = next((s for s, words in STAT_WORDS if any(w in low for w in words)), None)
     if stat is None and "yard" in low:
         stat = "total_yds"
-    combined = any(w in low for w in ("combine", "combined", "total between", "both teams"))
+    # "the teams combine" / "both teams" = both sides; "their team combine for 150 rushing yards" = one team
+    combined = bool(COMBINED_RE.search(low))
     if combined and stat in (None, "rush_yds", "pass_yds") and "total yards" in low:
         stat = "total_yds"
     found = []

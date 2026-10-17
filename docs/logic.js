@@ -131,11 +131,12 @@
 
   // ---------- pool.py ----------
 
-  const GAME_RE = /^\s*(?<away>[^@\n]+?)\s*(?:@|\bvs\.?)\s*(?<home>[^(\n]+?)\s*\((?<spread>[+-]?\s*\d+(?:\.\d+)?|PK|pk|Pick)\)\s*(?:o\s*\/\s*u\s*(?<total>\d+(?:\.\d+)?))?\s*(?:\*+\s*(?<weight>\d+)\s*-?\s*Point\s+Game\s*\*+)?\s*$/i;
+  const GAME_RE = /^\s*(?<away>[^@\n]+?)\s*(?:@|\bvs\.?)\s*(?<home>[^(\n]+?)\s*\((?<spread>[+-]?\s*\d+(?:\.\d+)?|PK|pk|Pick)\)\s*(?:o\s*\/\s*u\s*(?<total>\d+(?:\.\d+)?))?\s*(?:(?:mon|tues|wednes|thurs|fri|satur|sun)day\s*)?(?:\*+\s*(?<weight>\d+)\s*-?\s*Point\s+Game\s*\*+)?\s*(?:(?:mon|tues|wednes|thurs|fri|satur|sun)day\s*)?$/i;
   const PICK_RE = /^\s*(?<team>[^,\n]+?)\s*(?:,\s*(?<ou>O|U|Over|Under))?\s*$/i;
   const QUESTION_RE = /^\s*(?<n>\d+)[.)]\s*(?<text>.+)$/;
   const ANSWER_RE = /^\s*(OVER|UNDER|O|U)\s*$/i;
   const LINE_RE = /over\s+or\s+under\s+(?<line>\d+(?:\.\d+)?)\s*(?<unit>[a-z ]*)/i;
+  const COMBINED_RE = /\b(both teams|the teams|two teams|teams (?:to )?combine|combined between|total between|between (?:the|both) (?:two )?teams)\b/;
   const TIEBREAK_RE = /combined\s+score\s*[-:]?\s*(?<n>\d+)?/i;
 
   const STAT_WORDS = [
@@ -257,7 +258,7 @@
     let stat = null;
     for (const [s, words] of STAT_WORDS) if (words.some((w) => low.includes(w))) { stat = s; break; }
     if (stat === null && low.includes("yard")) stat = "total_yds";
-    const combined = ["combine", "combined", "total between", "both teams"].some((w) => low.includes(w));
+    const combined = COMBINED_RE.test(low);
     if (combined && [null, "rush_yds", "pass_yds"].includes(stat) && low.includes("total yards")) stat = "total_yds";
     const found = [];
     for (const g of weekGames) {
