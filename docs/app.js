@@ -479,7 +479,7 @@ async function loadPool() {
     } }, "✕");
     const canReplay = data.card.locked;
     const predictBtn = el("button", { class: "small", disabled: (locked && !canReplay) || (d.game_id == null) },
-      c ? "Re-run" : (canReplay ? "Replay (copy for Claude)" : "Copy for Claude"));
+      c ? "Re-run (copy for Claude)" : (canReplay ? "Replay (copy for Claude)" : "Copy for Claude"));
     predictBtn.addEventListener("click", () => claudeModal({
       title: `Claude: item ${num}`,
       getPrompt: () => api(`/api/pool/cards/${data.card.id}/prompt?items=${it.id}`),
@@ -568,6 +568,9 @@ async function loadPool() {
     submit: (answer) => api(`/api/pool/cards/${data.card.id}/review/answer`, { method: "POST", body: { answer } }),
     done: (r) => status(`Review saved: ${r.lessons.length} lesson(s). See the Review tab.`),
   }));
+  const claudeCount = items.filter((it) => it.claude).length;
+  const claudeNote = claudeCount ? null : el("div", { class: "job" },
+    "Claude's picks aren't in yet. They appear here once Claude's research has been run for this card (or use “Copy whole card for Claude” to do it in a Claude chat).");
   const gradeBtn = el("button", { title: "Reload the latest scores and grade the card" }, "Refresh scores");
   gradeBtn.addEventListener("click", () => withBusy(gradeBtn, "Refreshing…", async () => {
     const r = await api(`/api/pool/cards/${data.card.id}/grade`, { method: "POST", body: {} });
@@ -644,6 +647,8 @@ async function loadPool() {
     el("p", { class: "hint" }, sc.graded_possible ? `This week: ${sc.points} pts (${sc.correct}/${sc.graded_possible} correct) · Claude ${sc.claude_points} pts. ` : "", data.scoring_note),
     data.card.locked ? el("p", { class: "hint" }, "Deadline passed: your picks are locked. Claude can still run a strict replay (only information from before the deadline) for testing.") : "",
     el("div", { class: "pool-actions" }, predictAll, useAll, gradeBtn, reviewBtn),
+    claudeNote,
+    data.connected ? null : el("p", { class: "hint" }, "This device isn't connected, so picks are saved only here and Claude's picks won't show up. Tap ☁ Connect at the top."),
     el("div", { class: "table-wrap" }, el("table", { class: "pool-table" },
       el("thead", {}, el("tr", {}, ["", "Game & pool line", "Claude (vs pool line)", `${data.owner}'s pick`, "Result"].map((h) => el("th", {}, h)))),
       el("tbody", {}, rows))),
@@ -667,7 +672,7 @@ async function loadLeague() {
   const hl = await api("/api/league/highlights");
   const hlClass = (h) => (h ? `hl-${h}` : "");
 
-  const nav = el("div", { class: "subnav" }, [["week", `Weekly sheet · week ${p.week}`], ["season", `Season totals ${p.season}`], ["add", "Add picks"], ["rules", "Scoring & highlights"]]
+  const nav = el("div", { class: "subnav" }, [["week", `Weekly sheet · week ${p.week}`], ["season", `Season totals ${p.season}`], ["add", "Add everyone's picks"], ["rules", "Scoring & highlights"]]
     .map(([v, label]) => el("button", { class: `small ${leagueView === v ? "active" : ""}`, onclick: () => { leagueView = v; loadLeague(); } }, label)));
 
   let body;
@@ -741,7 +746,21 @@ async function loadLeague() {
             el("td", {}, r.from_pool ? "" : el("button", { class: "small", onclick: async () => { if (confirm(`Remove ${r.player}'s picks for this week?`)) { await api(`/api/league/entries/${r.entry_id}`, { method: "DELETE" }); loadLeague(); } } }, "✕")));
         }))));
     } catch (e) { entryList = el("p", { class: "warn" }, e.message); }
+    const sheetIn = el("textarea", { class: "sheet-in", placeholder: "Paste the league's whole weekly sheet here (select all the cells in the spreadsheet, copy, paste): game headers like “Colo @ GT (-6.5)”, O/U, Q1–Q3, the mid-major, and one row per player." });
+    const sheetBtn = el("button", { class: "primary" }, "Import the whole sheet");
+    const sheetMsg = el("div", {});
+    sheetBtn.addEventListener("click", () => withBusy(sheetBtn, "Importing…", async () => {
+      const r = await api("/api/league/sheet-import", { method: "POST", body: { ...p, text: sheetIn.value } });
+      sheetIn.value = "";
+      status(`Imported ${r.players} players' picks for week ${p.week}` + (r.created_card ? " and created the week's card from the sheet." : "."), r.warnings.length > 0);
+      await loadLeague();
+      if (r.warnings.length) $("#league").append(el("div", { class: "job bad" }, el("strong", {}, "Check these:"), el("ul", {}, r.warnings.slice(0, 30).map((w) => el("li", {}, w)))));
+    }));
     body = el("div", {},
+      el("h3", {}, `Whole league sheet for week ${p.week}`),
+      el("p", { class: "hint" }, "Every player at once. If there's no card for this week yet, the sheet's games, spreads, totals, 5-point game and mid-major become the card (add the question lines on the Pool tab)."),
+      sheetIn, el("div", { class: "pool-actions" }, sheetBtn), sheetMsg,
+      el("h3", {}, "Or one player at a time"),
       el("datalist", { id: "playerNames" }, players.map((n) => el("option", { value: n }))),
       el("div", { class: "league-add" }, el("div", {}, nameIn, el("div", { style: "height:6px" }), ptsIn), textIn),
       el("div", { class: "pool-actions" }, addBtn),
@@ -1008,6 +1027,63 @@ function propActualEditor(it) {
   return el("div", { class: "line-edit" }, inp, btn);
 }
 
+function renderSync() {
+  const S = Store.Sync, b = $("#syncBadge");
+  const map = { local: ["☁ Connect", "Picks are saved only on this device. Tap to connect so they're shared with every device and Claude's picks show up."],
+                pending: ["☁ Saving…", "Saving to GitHub"], syncing: ["☁ Saving…", S.message], synced: ["☁ Saved", "Everything is saved to GitHub and shared"],
+                error: ["⚠ Not saved", S.message] };
+  const [label, title] = map[S.connected() ? S.status : "local"] || map.local;
+  b.textContent = label;
+  b.title = title || "";
+  b.classList.toggle("bad", S.connected() && S.status === "error");
+  b.classList.toggle("ok", S.connected() && S.status === "synced");
+}
+
+function connectDialog() {
+  const S = Store.Sync, site = Store.site;
+  const close = () => overlay.remove();
+  const tokenIn = el("input", { type: "password", placeholder: "Paste the access key (starts with github_pat_)", class: "q-in", autocomplete: "off" });
+  const msg = el("div", { class: "cm-msg" }, S.status === "error" ? S.message : "");
+  const save = el("button", { class: "primary" }, "Connect");
+  save.addEventListener("click", () => withBusy(save, "Checking…", async () => {
+    msg.classList.remove("error");
+    try {
+      const t = tokenIn.value.trim();
+      if (!t) throw new Error("Paste the access key first.");
+      await S.test(t);
+      await S.pull();
+      close();
+      status("Connected. Picks are now saved to GitHub and shared.");
+      document.querySelector(".tab.active").click();
+    } catch (e) { msg.classList.add("error"); msg.textContent = e.message; }
+  }));
+  const share = S.connected() ? (() => {
+    const link = el("input", { type: "text", readonly: true, value: S.shareLink(), class: "q-in" });
+    const copy = el("button", { class: "small" }, "Copy link");
+    copy.addEventListener("click", async () => { try { await navigator.clipboard.writeText(link.value); copy.textContent = "Copied ✓"; } catch { link.select(); } });
+    const off = el("button", { class: "small" }, "Disconnect this device");
+    off.addEventListener("click", () => { if (confirm("Disconnect? Picks stay on this device but stop syncing.")) { S.disconnect(); close(); } });
+    return [el("h4", {}, "Connect another device (Ron's phone, iPad…)"),
+      el("p", { class: "hint" }, "Send this link privately (text it to yourself or Ron). Opening it connects that device in one tap. Anyone with it can change the picks, so don't post it publicly."),
+      el("div", { class: "pool-actions" }, link, copy), el("div", { class: "pool-actions" }, off)];
+  })() : null;
+  const overlay = el("div", { class: "cm-overlay", onclick: (e) => { if (e.target === overlay) close(); } },
+    el("div", { class: "cm", role: "dialog", "aria-label": "Connect" },
+      el("div", { class: "cm-head" }, el("h3", {}, S.connected() ? "Connected ☁" : "Connect this device"), el("button", { class: "small", onclick: close }, "✕")),
+      el("p", { class: "hint" }, `Connecting saves everything (cards, picks, league, Claude's picks) to the private repo ${site.owner}/${site.dataRepo}, so every connected device sees the same thing, including Claude's picks.`),
+      S.connected() ? el("p", {}, S.status === "error" ? `⚠ ${S.message}` : "This device is connected.") : null,
+      el("div", { class: "pool-actions" }, tokenIn, save), msg, share));
+  document.body.append(overlay);
+  tokenIn.focus();
+}
+
+$("#syncBadge").addEventListener("click", connectDialog);
+Store.Sync.listeners.add(renderSync);
+window.addEventListener("focus", async () => {   // pick up changes made on another device
+  if (!Store.Sync.connected() || document.querySelector(".cm-overlay")) return;
+  if (await Store.Sync.pull()) document.querySelector(".tab.active").click();
+});
+
 $("#backupBtn").addEventListener("click", () => {
   downloadBlob(Store.backup(), `cfb-picks-backup-${new Date().toISOString().slice(0, 10)}.json`, "application/json");
   status("Backup downloaded. Keep it somewhere safe (it holds your cards, picks, league entries and reviews).");
@@ -1064,6 +1140,8 @@ document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", asy
 
 (async function init() {
   showDataInfo();
+  renderSync();
+  if (Store.Sync.connected()) await Store.Sync.pull();
   let saved = null;
   try { saved = JSON.parse(localStorage.getItem("cfbPicks.controls")); } catch {}
   const year = new Date().getFullYear();

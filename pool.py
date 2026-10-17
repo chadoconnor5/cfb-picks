@@ -20,7 +20,7 @@ import teams as teams_mod
 from grading import grade_ats, grade_ou
 
 GAME_RE = re.compile(
-    r"^\s*(?P<away>[^@\n]+?)\s*@\s*(?P<home>[^(\n]+?)\s*\((?P<spread>[+-]?\s*\d+(?:\.\d+)?|PK|pk|Pick)\)\s*"
+    r"^\s*(?P<away>[^@\n]+?)\s*(?:@|\bvs\.?)\s*(?P<home>[^(\n]+?)\s*\((?P<spread>[+-]?\s*\d+(?:\.\d+)?|PK|pk|Pick)\)\s*"
     r"(?:o\s*/\s*u\s*(?P<total>\d+(?:\.\d+)?))?\s*(?:\*+\s*(?P<weight>\d+)\s*-?\s*Point\s+Game\s*\*+)?\s*$", re.I)
 PICK_RE = re.compile(r"^\s*(?P<team>[^,\n]+?)\s*(?:,\s*(?P<ou>O|U|Over|Under))?\s*$", re.I)
 QUESTION_RE = re.compile(r"^\s*(?P<n>\d+)[.)]\s*(?P<text>.+)$")

@@ -16,6 +16,10 @@
   }
 
   let S = load();
+  let base = clone(S);   // S as of the last sync; save() diffs against it to know what changed
+  let dirty = loadDirty();
+
+  function clone(x) { return JSON.parse(JSON.stringify(x)); }
 
   function load() {
     try {
@@ -25,16 +29,266 @@
     return blank();
   }
 
-  function save() {
-    S.savedAt = new Date().toISOString();
-    try { localStorage.setItem(KEY, JSON.stringify(S)); }
-    catch (e) { throw new Error("Couldn't save in this browser (storage full or blocked). Download a backup now."); }
+  function loadDirty() {
+    try { return new Set(JSON.parse(localStorage.getItem(KEY + ".dirty") || "[]")); } catch (e) { return new Set(); }
   }
 
-  const newId = () => S.nextId++;
+  function persist() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(S));
+      localStorage.setItem(KEY + ".dirty", JSON.stringify([...dirty]));
+    } catch (e) { throw new Error("Couldn't save in this browser (storage full or blocked). Download a backup now."); }
+  }
+
+  function save() {
+    S.savedAt = new Date().toISOString();
+    for (const p of diffPaths(base, S)) {
+      dirty.add(JSON.stringify(p));
+      if (Sync.pushing) Sync.changedDuringPush.add(JSON.stringify(p));
+    }
+    base = clone(S);
+    persist();
+    Sync.schedule();
+  }
+
+  // ids that can't collide between devices
+  const newId = () => Date.now() * 100 + Math.floor(Math.random() * 100);
   const cardKey = (season, week, type) => `${season}|${type || "regular"}|${week}`;
   const nowIso = () => new Date().toISOString();
   const minuteIso = () => new Date().toISOString().slice(0, 16) + "+00:00";
+
+
+  // ---------- sharing: state.json in the private data repo (GitHub contents API) ----------
+
+  const site = (() => {
+    const host = (root.location && root.location.hostname) || "";
+    const owner = host.endsWith(".github.io") ? host.split(".")[0] : "chadoconnor5";
+    const repo = ((root.location && root.location.pathname) || "").split("/").filter(Boolean)[0] || "cfb-picks";
+    return { owner, repo: host.endsWith(".github.io") ? repo : "cfb-picks", dataRepo: (host.endsWith(".github.io") ? repo : "cfb-picks") + "-data" };
+  })();
+  const TOKEN_KEY = "cfbPicks.token";
+
+  (function tokenFromLink() {   // a "connect" link carries the key in the #hash; keep it, then hide it
+    try {
+      const m = /[#&]connect=([^&]+)/.exec(root.location.hash || "");
+      if (m) {
+        localStorage.setItem(TOKEN_KEY, decodeURIComponent(m[1]));
+        root.history.replaceState(null, "", root.location.pathname + root.location.search);
+      }
+    } catch (e) { /* ignore */ }
+  })();
+
+  function diffPaths(a, b) {
+    const out = [];
+    const same = (x, y) => JSON.stringify(x === undefined ? null : x) === JSON.stringify(y === undefined ? null : y);
+    const keys = (x, y) => new Set([...Object.keys(x || {}), ...Object.keys(y || {})]);
+    for (const top of keys(a, b)) {
+      if (["savedAt", "nextId", "version"].includes(top)) continue;
+      const x = a[top], y = b[top];
+      if (top === "cards") {   // per item and per field, so two people editing one card don't undo each other
+        for (const k of keys(x, y)) {
+          const cx = (x || {})[k], cy = (y || {})[k];
+          if (same(cx, cy)) continue;
+          if (!cx || !cy || cx.id !== cy.id) { out.push([top, k]); continue; }
+          for (const f of keys(cx, cy)) {
+            if (f === "items") {
+              const ix = Object.fromEntries((cx.items || []).map((i) => [i.id, i])), iy = Object.fromEntries((cy.items || []).map((i) => [i.id, i]));
+              for (const id of keys(ix, iy)) if (!same(ix[id], iy[id])) out.push([top, k, "item", Number(id)]);
+            } else if (!same(cx[f], cy[f])) out.push([top, k, "field", f]);
+          }
+        }
+      } else if (top === "reviews") { for (const k of keys(x, y)) if (!same((x || {})[k], (y || {})[k])) out.push([top, k]); }
+      else if (top === "entries") {
+        for (const k of keys(x, y)) for (const p of keys((x || {})[k], (y || {})[k])) {
+          if (!same(((x || {})[k] || {})[p], ((y || {})[k] || {})[p])) out.push([top, k, p]);
+        }
+      } else if (top === "slate") {
+        for (const sub of keys(x, y)) for (const g of keys((x || {})[sub], (y || {})[sub])) {
+          if (!same(((x || {})[sub] || {})[g], ((y || {})[sub] || {})[g])) out.push([top, sub, g]);
+        }
+      } else if (top === "lessons") {
+        const byId = (arr) => Object.fromEntries((arr || []).map((l) => [l.id, l]));
+        const bx = byId(x), by = byId(y);
+        for (const id of keys(bx, by)) if (!same(bx[id], by[id])) out.push([top, Number(id)]);
+      } else if (!same(x, y)) out.push([top]);
+    }
+    return out;
+  }
+
+  const jobTime = (j) => (j ? j.finished_at || j.requested_at || "" : "");
+
+  function mergeCard(remoteCard, localCard) {
+    if (!localCard) return undefined;
+    const out = clone(localCard);
+    if (!remoteCard) return out;
+    const rItems = Object.fromEntries((remoteCard.items || []).map((it) => [it.id, it]));
+    for (const it of out.items) {   // Claude's answers written elsewhere (the GitHub job) win if newer
+      const r = rItems[it.id];
+      if (r && r.claude && (!it.claude || (r.claude.predicted_at || "") > (it.claude.predicted_at || ""))) it.claude = r.claude;
+    }
+    for (const f of ["claude_job", "review_job"]) if (jobTime(remoteCard[f]) > jobTime(out[f])) out[f] = remoteCard[f];
+    return out;
+  }
+
+  // Put this device's changed pieces (dirty paths) on top of the shared copy.
+  function applyDirty(remote, local, paths) {
+    const out = Object.assign(blank(), clone(remote || {}));
+    for (const ps of paths) {
+      const p = JSON.parse(ps);
+      if (p[0] === "*") return Object.assign(blank(), clone(local));
+      if (p[0] === "cards" && p.length === 2) {
+        const v = mergeCard(out.cards[p[1]], local.cards[p[1]]);
+        if (v === undefined) delete out.cards[p[1]]; else out.cards[p[1]] = v;
+      } else if (p[0] === "cards") {
+        const lc = local.cards[p[1]];
+        if (!lc) continue;
+        let rc = out.cards[p[1]];
+        if (!rc || rc.id !== lc.id) { out.cards[p[1]] = mergeCard(rc, lc); continue; }
+        if (p[2] === "field") {
+          if (["claude_job", "review_job"].includes(p[3]) && jobTime(rc[p[3]]) > jobTime(lc[p[3]])) continue;
+          if (lc[p[3]] === undefined) delete rc[p[3]]; else rc[p[3]] = clone(lc[p[3]]);
+        } else {
+          const li = lc.items.find((i) => i.id === p[3]);
+          const ri = rc.items.find((i) => i.id === p[3]);
+          if (!li) { rc.items = rc.items.filter((i) => i.id !== p[3]); continue; }
+          const v = clone(li);
+          if (ri && ri.claude && (!v.claude || (ri.claude.predicted_at || "") > (v.claude.predicted_at || ""))) v.claude = ri.claude;
+          if (ri) rc.items[rc.items.indexOf(ri)] = v; else rc.items.push(v);
+        }
+      } else if (p[0] === "lessons") {
+        const mine = (local.lessons || []).find((l) => l.id === p[1]);
+        out.lessons = (out.lessons || []).filter((l) => l.id !== p[1]);
+        if (mine) out.lessons.push(clone(mine));
+      } else {
+        let src = local, dst = out;
+        for (let i = 0; i < p.length - 1; i++) {
+          src = src ? src[p[i]] : undefined;
+          if (dst[p[i]] === undefined || dst[p[i]] === null || typeof dst[p[i]] !== "object") dst[p[i]] = {};
+          dst = dst[p[i]];
+        }
+        const last = p[p.length - 1];
+        const v = src ? src[last] : undefined;
+        if (v === undefined) delete dst[last]; else dst[last] = clone(v);
+      }
+    }
+    return out;
+  }
+
+  function b64encode(str) {
+    const bytes = new TextEncoder().encode(str);
+    let bin = "";
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return btoa(bin);
+  }
+  function b64decode(b64) {
+    const bin = atob(b64.replace(/\n/g, ""));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+
+  const Sync = {
+    status: "local", message: "", listeners: new Set(), timer: null, pushing: null, changedDuringPush: new Set(),
+    token() { try { return localStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; } },
+    connected() { return Boolean(this.token()); },
+    set(status, message) { this.status = status; this.message = message || ""; for (const f of this.listeners) try { f(); } catch (e) { /* ignore */ } },
+    async gh(path, opts = {}) {
+      let apiBase = "https://api.github.com";
+      try { apiBase = localStorage.getItem("cfbPicks.apiBase") || apiBase; } catch (e) { /* default */ }
+      const res = await fetch(`${apiBase}${path}`, {
+        ...opts, cache: "no-store",
+        headers: { Authorization: `Bearer ${this.token()}`, Accept: opts.accept || "application/vnd.github+json",
+                   "X-GitHub-Api-Version": "2022-11-28", ...(opts.body ? { "Content-Type": "application/json" } : {}) },
+      });
+      return res;
+    },
+    async remote() {
+      const url = `/repos/${site.owner}/${site.dataRepo}/contents/state.json`;
+      const res = await this.gh(url);
+      if (res.status === 404) {
+        const repo = await this.gh(`/repos/${site.owner}/${site.dataRepo}`);
+        if (repo.status === 404) throw new Error(`Can't see the private repo ${site.owner}/${site.dataRepo}: create it, and give the access key permission to it.`);
+        return { state: null, sha: null };
+      }
+      if (res.status === 401) throw new Error("GitHub rejected the access key (expired or mistyped). Reconnect this device.");
+      if (!res.ok) throw new Error(`GitHub said ${res.status} when loading the saved picks.`);
+      const meta = await res.json();
+      let text = meta.content ? b64decode(meta.content) : "";
+      if (!text && meta.size) {   // over 1 MB: fetch the raw file
+        const raw = await this.gh(url, { accept: "application/vnd.github.raw+json" });
+        text = await raw.text();
+      }
+      return { state: text ? JSON.parse(text) : null, sha: meta.sha };
+    },
+    async pull() {
+      if (!this.connected()) return false;
+      try {
+        this.set("syncing", "Loading shared picks…");
+        const r = await this.remote();
+        if (!r.state) { dirty.add('["*"]'); persist(); return this.push(); }
+        const before = JSON.stringify(S);
+        S = dirty.size ? applyDirty(r.state, S, dirty) : Object.assign(blank(), r.state);
+        base = clone(S);
+        persist();
+        if (dirty.size) await this.push(); else this.set("synced");
+        return JSON.stringify(S) !== before;
+      } catch (e) { this.set("error", e.message); return false; }
+    },
+    schedule() {
+      if (!this.connected()) { this.set("local"); return; }
+      clearTimeout(this.timer);
+      this.set("pending", "Saving…");
+      this.timer = setTimeout(() => this.push(), 800);
+    },
+    async push() {
+      if (!this.connected() || !dirty.size) { if (this.connected()) this.set("synced"); return true; }
+      if (this.pushing) return this.pushing;
+      clearTimeout(this.timer);
+      this.changedDuringPush = new Set();
+      this.pushing = (async () => {
+        this.set("syncing", "Saving…");
+        try {
+          for (let attempt = 0; attempt < 5; attempt++) {
+            const r = await this.remote();
+            const sent = [...dirty];
+            const merged = applyDirty(r.state, S, dirty);
+            merged.savedAt = new Date().toISOString();
+            const body = { message: `Save picks (${new Date().toISOString().slice(0, 16)})`, content: b64encode(JSON.stringify(merged)) };
+            if (r.sha) body.sha = r.sha;
+            const res = await this.gh(`/repos/${site.owner}/${site.dataRepo}/contents/state.json`, { method: "PUT", body: JSON.stringify(body) });
+            if (res.ok) {
+              for (const p of sent) if (!this.changedDuringPush.has(p)) dirty.delete(p);
+              S = dirty.size ? applyDirty(merged, S, dirty) : merged;
+              base = clone(S);
+              persist();
+              this.set(dirty.size ? "pending" : "synced");
+              if (dirty.size) setTimeout(() => this.push(), 300);
+              return true;
+            }
+            if (res.status === 401 || res.status === 403) throw new Error("GitHub didn't accept the access key for saving (needs Contents: read and write on the data repo).");
+            if (![409, 422].includes(res.status)) throw new Error(`GitHub said ${res.status} when saving.`);
+            await new Promise((ok) => setTimeout(ok, 400 * (attempt + 1)));   // someone else saved first: merge again
+          }
+          throw new Error("Couldn't save after several tries (someone else keeps saving). Try again in a minute.");
+        } catch (e) { this.set("error", e.message); return false; }
+        finally { this.pushing = null; }
+      })();
+      return this.pushing;
+    },
+    async test(token) {
+      const prev = this.token();
+      try {
+        localStorage.setItem(TOKEN_KEY, token);
+        const r = await this.remote();
+        return { ok: true, empty: !r.state };
+      } catch (e) {
+        if (prev) localStorage.setItem(TOKEN_KEY, prev); else localStorage.removeItem(TOKEN_KEY);
+        throw e;
+      }
+    },
+    disconnect() { try { localStorage.removeItem(TOKEN_KEY); } catch (e) { /* ignore */ } this.set("local"); },
+    shareLink() { return `${root.location.origin}${root.location.pathname}#connect=${encodeURIComponent(this.token())}`; },
+  };
 
   // ---------- game data ----------
 
@@ -192,7 +446,9 @@
     const tiebreak = card.tiebreaker != null ? card.tiebreaker : proj;
     return {
       card: { id: card.id, season: card.season, week: card.week, season_type: card.season_type, has_tiebreaker: card.has_tiebreaker ? 1 : 0,
-              tiebreaker: card.tiebreaker, deadline: card.deadline, locked: pastDeadline(card) },
+              tiebreaker: card.tiebreaker, deadline: card.deadline, locked: pastDeadline(card),
+              claude_job: card.claude_job || null },
+      connected: Sync.connected(),
       items: out,
       projected_combined: proj,
       score: { points: my.base, graded_possible: my.breakdown.graded, correct: my.breakdown.correct, claude_points: cl.base },
@@ -578,7 +834,7 @@
   function allEntries(card, items) {
     const pasted = entriesFor(card);
     const mine = ownerEntry(card, items);
-    if (mine && !pasted.some((e) => L.normName(e.player) === L.normName(mine.player))) pasted.push(mine);
+    if (mine && !pasted.some((e) => L.namesMatch(e.player, mine.player))) pasted.push(mine);
     return pasted.sort((a, b) => (a.player < b.player ? -1 : a.player > b.player ? 1 : 0));
   }
 
@@ -648,6 +904,95 @@
                              warnings: parsed.warnings };
     save();
     return { ok: true, player: name, picks: Object.keys(parsed.picks).length, tiebreaker: parsed.tiebreaker, warnings: parsed.warnings };
+  }
+
+  // The league's whole weekly spreadsheet at once (every player), creating the card from it if needed.
+  async function importSheet(b) {
+    const season = Number(b.season), week = Number(b.week), type = b.season_type || "regular";
+    if (!season || !week) err("season and week are required");
+    const sheet = L.parseLeagueSheet(b.text || "");
+    if (!sheet || !sheet.games.length) err("Couldn't find the games row (cells like “Colo @ GT (-6.5)”). Copy the whole sheet, including the game headers.");
+    if (!sheet.players.length) err("Found the games but no player rows under them.");
+    const ref = await reference(season);
+    const key = cardKey(season, week, type);
+    const warnings = [];
+    let card = S.cards[key];
+    const created = !card;
+    if (!card) {
+      const wd = await needWeek(season, week, type);
+      card = { id: newId(), season, week, season_type: type, raw: "(from the league sheet)", has_tiebreaker: true, tiebreaker: null,
+               deadline: wd.deadline, items: [] };
+      let idx = 0;
+      for (const g of sheet.games) {
+        let hit = null;
+        for (const wg of wd.games) {
+          const a = L.whichTeam(g.away, [wg.away_team, wg.home_team], ref.fbs, ref.nicknames);
+          const h = L.whichTeam(g.home, [wg.away_team, wg.home_team], ref.fbs, ref.nicknames);
+          if (a && h && a !== h) { hit = { wg, a, h }; break; }
+        }
+        if (!hit) warnings.push(`Couldn't find ${g.away} @ ${g.home} in that week's games`);
+        card.items.push({ id: newId(), idx: idx++, kind: g.kind, my_ats: null, my_ou: null, claude: null, data: {
+          kind: g.kind, away: hit ? hit.a : g.away, home: hit ? hit.h : g.home, game_id: hit ? hit.wg.id : null,
+          flipped: hit ? hit.h !== hit.wg.home_team : false, cfbd_away: hit ? hit.wg.away_team : null, cfbd_home: hit ? hit.wg.home_team : null,
+          home_spread: g.home_spread, total: g.total, weight: g.weight, line_entered_at: minuteIso() } });
+      }
+      for (const p of sheet.props) {
+        card.items.push({ id: newId(), idx: idx++, kind: "prop", my_prop: null, claude: null, data: {
+          kind: "prop", n: p.n, question: `Question ${p.n} (from the league sheet)`, line: null, unit: "", my_pick: null,
+          team: null, opponent: null, game_id: null, stat: null, scope: "team", line_entered_at: minuteIso() } });
+      }
+      S.cards[key] = card;
+    }
+    // sheet column -> card item
+    const gameItems = sortedItems(card).filter((it) => it.kind !== "prop");
+    const used = new Set();
+    const colItem = {};
+    sheet.games.forEach((g, pos) => {
+      let it = gameItems.find((x) => !used.has(x.id) && x.kind === g.kind &&
+        L.whichTeam(g.away, [x.data.away, x.data.home], ref.fbs, ref.nicknames) === x.data.away &&
+        L.whichTeam(g.home, [x.data.away, x.data.home], ref.fbs, ref.nicknames) === x.data.home);
+      if (!it && gameItems[pos] && !used.has(gameItems[pos].id)) {
+        it = gameItems[pos];
+        warnings.push(`Matched ${g.away} @ ${g.home} to ${it.data.away} @ ${it.data.home} by position`);
+      }
+      if (it) { used.add(it.id); colItem[g.col] = { it, g }; } else warnings.push(`${g.away} @ ${g.home} isn't on this week's card`);
+    });
+    const propItems = {};
+    for (const it of card.items) if (it.kind === "prop") propItems[it.data.n] = it;
+    const ouOf = (v) => { const t = (v || "").trim().toLowerCase(); return t.startsWith("o") ? "over" : t.startsWith("u") ? "under" : null; };
+    S.entries[key] = S.entries[key] || {};
+    let count = 0;
+    for (const pl of sheet.players) {
+      const picks = {}, pw = [];
+      for (const { it, g } of Object.values(colItem)) {
+        const team = pl.cells[g.col] || "";
+        const hit = team ? L.whichTeam(team, [it.data.away, it.data.home], ref.fbs, ref.nicknames) : null;
+        if (team && !hit) pw.push(`couldn't tell which team '${team}' is in ${it.data.away} @ ${it.data.home}`);
+        const ou = g.kind === "game" ? ouOf(pl.cells[g.col + 1]) : null;
+        picks[String(it.idx)] = { ats: hit === it.data.home ? "home" : hit === it.data.away ? "away" : null, ou };
+      }
+      for (const p of sheet.props) {
+        const it = propItems[p.n];
+        if (it) picks[String(it.idx)] = { pick: ouOf(pl.cells[p.col]) };
+      }
+      const existing = Object.entries(S.entries[key]).find(([n]) => L.namesMatch(n, pl.name));
+      if (existing && existing[0] !== pl.name) delete S.entries[key][existing[0]];
+      S.entries[key][pl.name] = { id: existing ? existing[1].id : newId(), raw: pl.cells.join("\t"), picks,
+                                  tiebreaker: existing ? existing[1].tiebreaker : null,
+                                  reported_points: existing ? existing[1].reported_points : null, warnings: pw };
+      if (pw.length) warnings.push(`${pl.name}: ${pw.join("; ")}`);
+      // the owner's row also fills the Pool tab's picks when they're empty
+      if (L.namesMatch(pl.name, owner()) && !card.items.some((i) => i.my_ats || i.my_ou || i.my_prop)) {
+        for (const it of card.items) {
+          const pk = picks[String(it.idx)];
+          if (!pk) continue;
+          if (it.kind === "prop") it.my_prop = pk.pick; else { it.my_ats = pk.ats; it.my_ou = pk.ou; }
+        }
+      }
+      count++;
+    }
+    save();
+    return { ok: true, players: count, created_card: created, games: Object.keys(colItem).length, questions: sheet.props.length, warnings };
   }
 
   function entryById(id) {
@@ -986,6 +1331,7 @@
     ["GET", /^\/api\/league\/scoring$/, () => scoring()],
     ["POST", /^\/api\/league\/scoring$/, (m, q, b) => { S.scoring = L.merged(b); save(); return S.scoring; }],
     ["POST", /^\/api\/league\/entries$/, (m, q, b) => addEntry(b)],
+    ["POST", /^\/api\/league\/sheet-import$/, (m, q, b) => importSheet(b)],
     ["POST", /^\/api\/league\/entries\/(\d+)$/, (m, q, b) => editEntry(m[1], b)],
     ["DELETE", /^\/api\/league\/entries\/(\d+)$/, (m) => deleteEntry(m[1])],
     ["GET", /^\/api\/league\/week$/, (m, q) => weekView(q)],
@@ -1045,8 +1391,9 @@
     const st = d && d.state;
     if (!st || typeof st !== "object" || !st.cards) throw new Error("That file isn't a CFB Picks backup.");
     S = Object.assign(blank(), st);
+    dirty.add('["*"]');
     save();
   }
 
-  root.Store = { api, backup, restore, index, weekData, get state() { return S; } };
+  root.Store = { api, backup, restore, index, weekData, Sync, site, get state() { return S; } };
 })(typeof globalThis !== "undefined" ? globalThis : this);

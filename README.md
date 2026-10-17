@@ -16,12 +16,13 @@ picks, and Claude reviews its own misses each week so the next week's picks impr
   frozen, so Claude only ever sees what was known by the deadline. A past week built for the first time after
   its deadline is rebuilt "as of" the deadline (stats from earlier games only, the opening line instead of the
   closing line, the forecast issued before the cutoff).
-- **Everything you enter** (cards, picks, Claude's answers, league entries, reviews, lessons) is saved in your
-  browser, like the possession tracker. Use **Backup** to download it and **Restore** to load it on another
-  device. Back up after each week.
-- **Claude** is used through your claude.ai subscription, with no API key: the site builds the full prompt,
-  you paste it into a Claude chat with web search on (so Claude checks injuries and coaching news itself),
-  then paste the answer back.
+- **Everything you enter** (cards, picks, league entries, Claude's picks, reviews, lessons) is saved to
+  `state.json` in the private repo `chadoconnor5/cfb-picks-data` on every connected device (☁ button), so Ron and
+  Chad see the same thing everywhere. An unconnected browser keeps its entries locally (Backup / Restore).
+- **Claude** runs without an API key: when Chad asks a Claude Code session to "do Claude's picks for week N",
+  it reads the card from the data repo, researches every game with web search and saves the picks back
+  (procedure in `CLAUDE.md`, tools in `cloud.py`). The site's "Copy for Claude" buttons do the same by hand
+  with any Claude chat.
 
 ## Each week
 
@@ -50,7 +51,12 @@ blind trial, type its number (for example `7`) in the **weeks** box.
    **New repository secret**. Use the name `CFBD_KEY` and paste your key as the value.
 2. **Turn on the website:** repo **Settings**, then **Pages**. Under "Build and deployment", set Source to
    **Deploy from a branch**, Branch to **main**, folder to **/docs**, and click **Save**.
-3. **First data build:** **Actions**, then **Update data**, then **Run workflow** (the first run takes about
+3. **Shared saving:** create a private repo named `cfb-picks-data` (tick "Add a README file"). Then create a
+   fine-grained access key at https://github.com/settings/personal-access-tokens/new: Repository access, then
+   Only select repositories, then `cfb-picks-data`; Permissions, then Contents, then Read and write. On the site,
+   tap **☁ Connect** and paste it. Then tap ☁ again and **Copy link** to send Ron a link that connects his
+   device in one tap (send it privately).
+4. **First data build:** **Actions**, then **Update data**, then **Run workflow** (the first run takes about
    10 minutes because it downloads four past seasons of history; later runs take a minute or two).
 
 The schedule (in `.github/workflows/update-data.yml`) runs Monday to Thursday late morning, Friday at about 10 AM

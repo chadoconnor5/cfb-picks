@@ -22,17 +22,22 @@ from fixtures import adv  # noqa: E402
 WEEK7 = [("Ohio State", "Indiana"), ("Mississippi State", "LSU"), ("Alabama", "Tennessee"), ("Missouri", "Ole Miss"),
          ("North Carolina", "Duke"), ("Notre Dame", "BYU"), ("Wisconsin", "UCLA"), ("Michigan State", "Northwestern"),
          ("Texas Tech", "Arizona State"), ("Washington State", "Oregon State"), ("Western Michigan", "Central Michigan")]
-TEAMS = sorted({t for m in WEEK7 for t in m} | {"North Dakota State", "Sacramento State"})
+WEEK1 = [("Colorado", "Georgia Tech"), ("Baylor", "Auburn"), ("Tulane", "Duke"), ("Clemson", "LSU"), ("UCLA", "California"),
+         ("Louisville", "Ole Miss"), ("SMU", "Florida State"), ("Liberty", "James Madison")]
+NEUTRAL = {("Baylor", "Auburn"), ("Louisville", "Ole Miss")}
+TEAMS = sorted({t for m in WEEK7 + WEEK1 for t in m} | {"North Dakota State", "Sacramento State"})
 CONF = {"Ohio State": "Big Ten", "Indiana": "Big Ten", "Wisconsin": "Big Ten", "UCLA": "Big Ten", "Michigan State": "Big Ten",
         "Northwestern": "Big Ten", "Mississippi State": "SEC", "LSU": "SEC", "Alabama": "SEC", "Tennessee": "SEC",
         "Missouri": "SEC", "Ole Miss": "SEC", "North Carolina": "ACC", "Duke": "ACC", "Notre Dame": "FBS Independents",
         "BYU": "Big 12", "Texas Tech": "Big 12", "Arizona State": "Big 12", "Washington State": "Pac-12",
         "Oregon State": "Pac-12", "Western Michigan": "Mid-American", "Central Michigan": "Mid-American",
-        "North Dakota State": "FBS Independents", "Sacramento State": "FBS Independents"}
+        "North Dakota State": "FBS Independents", "Sacramento State": "FBS Independents", "Colorado": "Big 12",
+        "Georgia Tech": "ACC", "Baylor": "Big 12", "Auburn": "SEC", "Tulane": "American", "Clemson": "ACC", "California": "ACC",
+        "Louisville": "ACC", "SMU": "ACC", "Florida State": "ACC", "Liberty": "Conference USA", "James Madison": "Sun Belt"}
 VENUE = {t: 1000 + i for i, t in enumerate(TEAMS)}
 LOC = {t: (30 + (i * 1.3) % 18, -120 + (i * 2.7) % 45) for i, t in enumerate(TEAMS)}
 INDOOR = {"North Dakota State"}
-WEEK1 = datetime(2026, 9, 5, 19, 30, tzinfo=timezone.utc)
+KICK1 = datetime(2026, 9, 5, 19, 30, tzinfo=timezone.utc)
 
 
 def h(*parts):
@@ -45,10 +50,12 @@ def schedule():
     for week in range(1, 9):
         if week == 7:
             pairs = list(WEEK7)
+        elif week == 1:
+            pairs = list(WEEK1)
         else:
             order = sorted(TEAMS, key=lambda t: h(week, t))
             pairs = [(order[i], order[i + 1]) for i in range(0, len(order) - 1, 2)]
-        kick = WEEK1 + timedelta(days=7 * (week - 1))
+        kick = KICK1 + timedelta(days=7 * (week - 1))
         for n, (a, home) in enumerate(pairs):
             gid += 1
             spread = -((h(gid, "s") % 29) - 14) / 2 or -3.5
@@ -58,7 +65,7 @@ def schedule():
             ap = 10 + h(gid, "ap") % 31 if final else None
             games.append({"id": gid, "season": 2026, "week": week, "seasonType": "regular",
                           "startDate": (kick + timedelta(hours=(n % 4) * 3.5)).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                          "startTimeTBD": False, "completed": final, "neutralSite": False, "conferenceGame": CONF[a] == CONF[home],
+                          "startTimeTBD": False, "completed": final, "neutralSite": (a, home) in NEUTRAL, "conferenceGame": CONF[a] == CONF[home],
                           "attendance": 50000 + h(gid) % 40000 if final else None, "venueId": VENUE[home], "venue": f"{home} Stadium",
                           "homeTeam": home, "homeConference": CONF[home], "homePoints": hp,
                           "awayTeam": a, "awayConference": CONF[a], "awayPoints": ap,
@@ -173,8 +180,8 @@ class H(BaseHTTPRequestHandler):
             return self.send(advanced_games(int(q.get("week", 0))))
         if path == "/calendar":
             return self.send([{"season": 2026, "week": w, "seasonType": "regular",
-                               "startDate": (WEEK1 - timedelta(days=4) + timedelta(days=7 * (w - 1))).isoformat().replace("+00:00", "Z"),
-                               "endDate": (WEEK1 + timedelta(days=3) + timedelta(days=7 * (w - 1))).isoformat().replace("+00:00", "Z")}
+                               "startDate": (KICK1 - timedelta(days=4) + timedelta(days=7 * (w - 1))).isoformat().replace("+00:00", "Z"),
+                               "endDate": (KICK1 + timedelta(days=3) + timedelta(days=7 * (w - 1))).isoformat().replace("+00:00", "Z")}
                               for w in range(1, 15)])
         if path == "/venues":
             return self.send([{"id": VENUE[t], "name": f"{t} Stadium", "latitude": LOC[t][0], "longitude": LOC[t][1],

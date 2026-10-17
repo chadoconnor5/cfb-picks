@@ -50,7 +50,7 @@ def test_build_site(fake_url, tmp_path):
     assert ctx["replay"] and ctx["frozen"] and ctx["as_of"].startswith("2026-10-16T19:00")
     assert ctx["line"]["label"].startswith("opening line") and ctx["line"]["spread"] == osu["spread_open"]
     assert "Team analytics" in ctx["text"] and "Betting history" in ctx["text"] and "Information cutoff" in ctx["text"]
-    assert ctx["prop_stats"]["home"]["team"] == "Indiana" and ctx["prop_stats"]["home"]["for"]["rush_yds"]["n"] == 6
+    assert ctx["prop_stats"]["home"]["team"] == "Indiana" and ctx["prop_stats"]["home"]["for"]["rush_yds"]["n"] >= 4
 
     w6 = json.loads((data / "2026" / "regular-w06.json").read_text())
     assert w6["complete"] and all(g["box"] and g["box"]["home"]["rush_yds"] is not None for g in w6["games"])

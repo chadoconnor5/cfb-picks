@@ -287,3 +287,11 @@ pre.ctx-text { white-space: pre-wrap; font-size: 12px; line-height: 1.45; max-he
 .help ol, .help ul { padding-left: 20px; margin: 0; }
 .help li { margin: 4px 0; }
 .help a { color: var(--accent); }
+.sync-badge { margin-left: 8px; }
+.sync-badge.ok { border-color: var(--win); color: var(--win); }
+.sync-badge.bad { border-color: var(--loss); color: var(--loss); }
+.job { margin: 8px 0; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border); }
+.job.running { border-color: var(--accent); }
+.job.ok { border-color: var(--win); }
+.job.bad { border-color: var(--loss); color: var(--loss); }
+textarea.sheet-in { width: 100%; min-height: 140px; box-sizing: border-box; font: 12px/1.4 ui-monospace, Consolas, monospace; }

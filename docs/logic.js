@@ -131,7 +131,7 @@
 
   // ---------- pool.py ----------
 
-  const GAME_RE = /^\s*(?<away>[^@\n]+?)\s*@\s*(?<home>[^(\n]+?)\s*\((?<spread>[+-]?\s*\d+(?:\.\d+)?|PK|pk|Pick)\)\s*(?:o\s*\/\s*u\s*(?<total>\d+(?:\.\d+)?))?\s*(?:\*+\s*(?<weight>\d+)\s*-?\s*Point\s+Game\s*\*+)?\s*$/i;
+  const GAME_RE = /^\s*(?<away>[^@\n]+?)\s*(?:@|\bvs\.?)\s*(?<home>[^(\n]+?)\s*\((?<spread>[+-]?\s*\d+(?:\.\d+)?|PK|pk|Pick)\)\s*(?:o\s*\/\s*u\s*(?<total>\d+(?:\.\d+)?))?\s*(?:\*+\s*(?<weight>\d+)\s*-?\s*Point\s+Game\s*\*+)?\s*$/i;
   const PICK_RE = /^\s*(?<team>[^,\n]+?)\s*(?:,\s*(?<ou>O|U|Over|Under))?\s*$/i;
   const QUESTION_RE = /^\s*(?<n>\d+)[.)]\s*(?<text>.+)$/;
   const ANSWER_RE = /^\s*(OVER|UNDER|O|U)\s*$/i;
@@ -655,10 +655,53 @@
     return (name || "").replace(/’/g, "'").replace(/‘/g, "'").replace(/`/g, "'").toLowerCase().split(/\s+/).filter(Boolean).join(" ");
   }
 
+  function namesMatch(a, b) {
+    const x = normName(a), y = normName(b);
+    if (x === y) return true;
+    const px = x.replace(/\./g, " ").split(/\s+/).filter(Boolean), py = y.replace(/\./g, " ").split(/\s+/).filter(Boolean);
+    if (px.length < 2 || py.length < 2 || px.slice(1).join(" ") !== py.slice(1).join(" ")) return false;
+    return (px[0].length === 1 || py[0].length === 1) && px[0][0] === py[0][0];
+  }
+
   function highlightFor(name, highlights) {
-    const want = normName(name);
-    for (const [k, v] of Object.entries(highlights || {})) if (normName(k) === want) return v;
+    for (const [k, v] of Object.entries(highlights || {})) if (namesMatch(k, name)) return v;
     return null;
+  }
+
+  // The league's weekly spreadsheet (tab-separated, as copied from Sheets/Excel): a row of games like
+  // "Colo @ GT (-6.5)" with the O/U in the next column, Q1..Qn columns, a mid-major game, then one row
+  // per player. Returns the games (with their column), the question columns and each player's cells.
+  function parseLeagueSheet(text) {
+    const rows = text.split(/\r\n|\r|\n/).map((r) => r.split("\t").map((c) => c.trim()));
+    const GAME = /^(?<away>.+?)\s*(?:@|\bvs\.?)\s*(?<home>[^()]+?)\s*\((?<spread>[+-]?\s*\d+(?:\.\d+)?|PK|pk|Pick)\)\s*$/i;
+    const gi = rows.findIndex((r) => r.filter((c) => GAME.test(c)).length >= 2);
+    if (gi < 0) return null;
+    const head = rows[gi];
+    const above = rows.slice(0, gi);
+    const colText = (i) => above.map((r) => r[i] || "").join(" ");
+    const games = [], props = [];
+    let midSeen = false;
+    head.forEach((c, i) => {
+      const q = /^Q(\d+)$/i.exec(c);
+      if (q) { props.push({ n: parseInt(q[1], 10), col: i }); return; }
+      const m = GAME.exec(c);
+      if (!m) return;
+      const nextNum = head[i + 1] !== undefined && /^\d+(\.\d+)?$/.test(head[i + 1]) ? parseFloat(head[i + 1]) : null;
+      const isMid = /mid[- ]?major/i.test(colText(i)) || (nextNum === null && props.length > 0) || midSeen;
+      if (isMid) midSeen = true;
+      const w = /(\d+)\s*-?\s*Point\s+Game/i.exec(colText(i));
+      const sp = m.groups.spread.replace(/ /g, "");
+      games.push({ kind: isMid ? "mid_major" : "game", away: m.groups.away.trim(), home: m.groups.home.trim(),
+                   home_spread: /^(pk|pick)$/i.test(sp) ? 0 : parseFloat(sp), total: isMid ? null : nextNum,
+                   weight: w ? parseInt(w[1], 10) : 1, col: i });
+    });
+    const players = [];
+    for (const r of rows.slice(gi + 1)) {
+      const name = (r[0] || "").trim();
+      if (!name || r.slice(1).every((c) => !c)) continue;
+      players.push({ name, cells: r });
+    }
+    return { games, props, players };
   }
 
   function pickLabel(item, pick) {
@@ -676,7 +719,7 @@
     const cols = items.map((it) => ({
       idx: it.idx, kind: it.kind, weight: it.data.weight === undefined ? 1 : it.data.weight,
       label: it.kind === "prop" ? `Q${it.data.n}` : `${it.data.away} @ ${it.data.home}`,
-      line: it.kind === "prop" ? `O/U ${pyStr(it.data.line, true)}` :
+      line: it.kind === "prop" ? (it.data.line != null ? `O/U ${pyStr(it.data.line, true)}` : "line not set") :
         `${it.data.home} ${fmtSigned(it.data.home_spread)}` + (it.data.total != null ? `, o/u ${fmtG(it.data.total)}` : ""),
     }));
     const rows = scored.rows.map((r) => {
@@ -1044,7 +1087,7 @@
     pyRound, fmtG, fmtSigned, gradeAts, gradeOu, formatSpread, norm, canonical, ratio, getCloseMatch,
     parseCard, matchTeam, matchGames, interpretProp, exportText, gradeGameItem, propActual, gradeProp, whichTeam, parseEntry,
     LINE_RE, DEFAULT_SCORING, merged, actualCombined, scoreEntry, tiebreakPoints, weekComplete, scoreWeek, leaderboard,
-    candidateConfigs, describeRule, inferRules, DEFAULT_HIGHLIGHTS, normName, highlightFor, pickLabel, weekSheet, seasonSheet, toCsv,
+    candidateConfigs, describeRule, inferRules, DEFAULT_HIGHLIGHTS, normName, namesMatch, highlightFor, parseLeagueSheet, pickLabel, weekSheet, seasonSheet, toCsv,
     weekItems, stats, calibrationLines, headerLines, rowFromData, propFromData, propPrompt,
     extractJson, answersByItem, researchBlock, cardPrompt, reviewPrompt, finalizeReview,
   };

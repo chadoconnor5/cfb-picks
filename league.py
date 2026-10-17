@@ -295,10 +295,20 @@ def norm_name(name):
     return " ".join((name or "").replace("\u2019", "'").replace("\u2018", "'").replace("`", "'").lower().split())
 
 
+def names_match(a, b):
+    """Same person? Also matches an initial with a full first name ("R. O'Connor" = "Ron O'Connor")."""
+    x, y = norm_name(a), norm_name(b)
+    if x == y:
+        return True
+    px, py = x.replace(".", " ").split(), y.replace(".", " ").split()
+    if len(px) < 2 or len(py) < 2 or px[1:] != py[1:]:
+        return False
+    return (len(px[0]) == 1 or len(py[0]) == 1) and px[0][0] == py[0][0]
+
+
 def highlight_for(name, highlights):
-    want = norm_name(name)
     for k, v in (highlights or {}).items():
-        if norm_name(k) == want:
+        if names_match(k, name):
             return v
     return None
 
@@ -320,7 +330,7 @@ def week_sheet(items, scored, entries, highlights):
     by_player = {e["player"]: e for e in entries}
     cols = [{"idx": it["idx"], "kind": it["kind"], "weight": it["data"].get("weight", 1),
              "label": f"Q{it['data'].get('n')}" if it["kind"] == "prop" else f"{it['data']['away']} @ {it['data']['home']}",
-             "line": (f"O/U {it['data'].get('line')}" if it["kind"] == "prop" else
+             "line": ((f"O/U {it['data'].get('line')}" if it["data"].get("line") is not None else "line not set") if it["kind"] == "prop" else
                       f"{it['data']['home']} {it['data']['home_spread']:+g}" + (f", o/u {it['data']['total']:g}" if it["data"].get("total") is not None else ""))}
             for it in items]
     rows = []

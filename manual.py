@@ -68,14 +68,18 @@ PROP_SPEC = """{"item": <item number>, "pick": "over" | "under", "projection": <
  "reasoning": "<2 sentences>"}"""
 
 
-def card_prompt(sections, as_of, replay, title):
-    """sections: [{"idx", "kind", "teams", "text"}]. One prompt for a whole pool card (or part of it)."""
+def card_prompt(sections, as_of, replay, title, lessons=None):
+    """sections: [{"idx", "kind", "teams", "text"}]. One prompt for a whole pool card (or part of it).
+    Same text as cardPrompt() in docs/logic.js."""
     teams = [t for s in sections for t in s["teams"]]
     kinds = {s["kind"] for s in sections}
     out = [f"# {title}", "", "## How to pick", predict.SYSTEM]
     if "prop" in kinds:
         out += ["", "For the prop questions:", predict.PROP_SYSTEM]
-    out += ["", research_block(teams, as_of, replay), "", "## Items"]
+    out += ["", research_block(teams, as_of, replay)]
+    if lessons:
+        out += ["", "## Lessons from grading your own past picks (apply them)"] + [f"  - {x}" for x in lessons]
+    out += ["", "## Items"]
     for s in sections:
         label = {"game": "Game", "mid_major": "Mid-major game (spread only, no total)", "prop": "Question"}[s["kind"]]
         out += ["", f"### Item {s['idx']} - {label}", s["text"]]

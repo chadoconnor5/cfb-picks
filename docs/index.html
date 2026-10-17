@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CFB Picks</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏈</text></svg>">
-  <link rel="stylesheet" href="style.css?v=202610172240">
+  <link rel="stylesheet" href="style.css?v=202610172257">
   <script>
     try { const t = localStorage.getItem("cfbPicks.theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
   </script>
@@ -20,6 +20,7 @@
       <button class="tab" data-tab="review">Review</button>
       <button class="tab" data-tab="record">Record</button>
       <button class="tab" data-tab="teams">Teams</button>
+      <button id="syncBadge" class="small sync-badge" title="Sharing and saving">☁ Connect</button>
       <button id="helpBtn" class="small help-btn" title="How to use this site">❓ Instructions</button>
       <button id="themeToggle" class="theme-toggle small" title="Switch between dark, light and system theme">🌙 Dark</button>
     </nav>
@@ -84,8 +85,12 @@
 
   <template id="helpTpl">
     <div class="help">
-      <p class="hint">This site keeps Ron O'Connor's weekly pick'em card, gets Claude's picks against the pool's lines, grades
+      <p class="hint">This site keeps Ron O'Connor's weekly pick'em card, shows Claude's picks against the pool's lines, grades
         everything automatically, and keeps the league standings. Game data (lines, scores, weather, stats) updates by itself.</p>
+
+      <h4>First time on a device</h4>
+      <p>Open the connect link Chad sends you (or tap <em>☁ Connect</em> at the top and paste the access key). The button then
+        reads <em>☁ Saved</em>: everything you enter is saved online and is the same on every connected phone, iPad and computer.</p>
 
       <h4>Every week</h4>
       <ol>
@@ -94,25 +99,25 @@
         <li><strong>Import the card (Mon/Tue).</strong> Open the <em>Pool</em> tab, paste the whole pool email into the box
           and tap <em>Import card</em>. Check the spreads, totals and 5-point game match the email; fix any line with
           <em>Save line</em>.</li>
-        <li><strong>Get Claude's picks.</strong> Tap <em>Copy whole card for Claude</em>, then <em>Copy prompt</em>.
-          Open <a href="https://claude.ai/new" target="_blank" rel="noopener">claude.ai</a>, turn on web search,
-          paste and send. When Claude finishes, copy its whole reply, paste it into the second box and tap
-          <em>Save Claude's answer</em>. If some items show a problem, tap <em>Copy for Claude</em> on just those rows.</li>
+        <li><strong>Claude's picks</strong> appear in the Claude column once Chad has Claude research the card (it looks up
+          injuries, coaching news and weather for every game). Tap <em>Load</em> or reopen the page to see them. (Anyone with
+          their own Claude chat can also use <em>Copy whole card for Claude</em> and paste the answer back.)</li>
         <li><strong>Make Ron's picks</strong> in the pick column (or tap <em>Use all Claude picks</em>), and set the
           combined-score tiebreaker.</li>
         <li><strong>Send them.</strong> Under <em>Reply text</em>, tap <em>Copy picks</em> and paste into the reply email.
           Picks lock at the deadline (Friday 12:00 PM Pacific).</li>
         <li><strong>After the games (Sunday).</strong> Tap <em>Refresh scores</em>. For questions about players that don't
           fill in automatically, type the real number in the <em>Result</em> box and tap <em>Set</em>.</li>
-        <li><strong>Let Claude learn.</strong> Tap <em>Copy review for Claude</em> and do the same copy and paste. Its
-          lessons show on the <em>Review</em> tab and go into next week's prompts.</li>
-        <li><strong>Back up.</strong> Tap <em>Backup</em> (top) to download everything you've entered.</li>
+        <li><strong>Claude learns</strong> from the week once Chad runs its review; the lessons show on the <em>Review</em> tab
+          and go into next week's picks.</li>
       </ol>
 
       <h4>League tab</h4>
       <ul>
-        <li><em>Add picks</em>: type a player's name, paste their picks (same format as the card) and tap
-          <em>Add / replace picks</em>. Ron's picks come from the Pool tab automatically.</li>
+        <li><em>Add everyone's picks</em>: in the league spreadsheet, select all the cells for the week (game headers through the
+          last player), copy, paste into the big box and tap <em>Import the whole sheet</em>. Set the right <em>Week</em> at the
+          top first. If there's no card for that week yet, the sheet creates it. One player at a time works too.</li>
+        <li>Ron's picks come from the Pool tab automatically (or from his "R. O'Connor" row in the sheet).</li>
         <li><em>Weekly sheet</em> and <em>Season totals</em>: the standings (Download CSV for a spreadsheet). The Kenneys'
           rows are light red and Ron's is gold; change colors under <em>Scoring &amp; highlights</em>.</li>
         <li>Enter the league's posted points next to each player, then <em>Figure out the unknown rules</em> to pin down
@@ -133,9 +138,8 @@
           the latest. To update right now: GitHub repo → Actions → Update data → Run workflow.</li>
         <li><strong>The deadline is respected:</strong> after Friday noon Pacific a week's information is frozen, so Claude
           only sees what was known by then. Past weeks can be replayed blind the same way.</li>
-        <li><strong>Your entries live in this browser</strong> (phone, iPad and computer each keep their own). Use
-          <em>Backup</em> on one device and <em>Restore</em> on another to move them. Clearing browser data erases them,
-          so back up weekly.</li>
+        <li><strong>Saving:</strong> on a connected device (<em>☁ Saved</em>) everything is saved online automatically. If it says
+          <em>☁ Connect</em>, entries are kept only in that browser. <em>Backup</em> downloads a copy of everything any time.</li>
       </ul>
     </div>
   </template>
@@ -171,8 +175,8 @@
       document.getElementById("helpBtn").addEventListener("click", openHelp);
     })();
   </script>
-  <script src="logic.js?v=202610172240"></script>
-  <script src="store.js?v=202610172240"></script>
-  <script src="app.js?v=202610172240"></script>
+  <script src="logic.js?v=202610172257"></script>
+  <script src="store.js?v=202610172257"></script>
+  <script src="app.js?v=202610172257"></script>
 </body>
 </html>
