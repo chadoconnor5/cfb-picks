@@ -255,6 +255,9 @@ def weather_text(ctx):
     return conditions.describe(ctx["assessment"]) if ctx.get("assessment") else None
 
 
+REPLAY = False   # --replay: research context for weeks first built after their deadline (blind trials)
+
+
 def build_week(conn, season, week, season_type, first_run_extras):
     path = week_file(season, week, season_type)
     old = load_json(path, {}) or {}
@@ -296,7 +299,7 @@ def build_week(conn, season, week, season_type, first_run_extras):
             summary = prev.get("summary")
             if ctx_out and not ctx_out.get("frozen"):
                 ctx_out["frozen"] = True
-            if not ctx_out and deadline is not None:   # first build after the deadline: strict replay as of it
+            if not ctx_out and deadline is not None and REPLAY:   # opt-in: strict replay as of the deadline
                 try:
                     ctx_out, summary = replay_context(conn, row, deadline)
                 except Exception as e:
@@ -397,7 +400,11 @@ def main(argv=None):
     ap.add_argument("--weeks", default="", help="extra regular-season weeks to (re)build, e.g. 7 or 6,7")
     ap.add_argument("--history", default=None, help="past seasons for the history warehouse (default: last 4)")
     ap.add_argument("--skip-history", action="store_true")
+    ap.add_argument("--replay", action="store_true",
+                    help="also build as-of-deadline research for past weeks (only needed for a blind trial)")
     args = ap.parse_args(argv)
+    global REPLAY
+    REPLAY = args.replay
     if not os.getenv("CFBD_API_KEY"):
         sys.exit("CFBD_API_KEY is not set (GitHub: Settings > Secrets and variables > Actions > CFBD_KEY).")
     started = now_utc()

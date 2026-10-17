@@ -37,7 +37,7 @@ def run_build(fake_url, tmp, *args):
 
 
 def test_build_site(fake_url, tmp_path):
-    out = run_build(fake_url, tmp_path, "--weeks", "7")
+    out = run_build(fake_url, tmp_path, "--weeks", "7", "--replay")
     data = tmp_path / "data"
     index = json.loads((data / "index.json").read_text())
     assert index["current"] == {"week": 7, "season_type": "regular"}

@@ -122,7 +122,7 @@ async function renderWeek(root) {
   const banner = el("div", { class: `banner ${card.locked ? "locked" : ""}` },
     el("h2", {}, `Week ${card.week}`), el("div", { class: "muted small" }, due),
     sc.graded_possible ? el("div", { class: "scoreline" }, el("span", {}, `${first}: ${sc.points} pts`), el("span", { class: "muted" }, `Claude: ${sc.claude_points} pts`)) : null,
-    items.some((it) => it.claude) ? null : el("div", { class: "muted small" }, "Claude's picks will show here once Claude's research has been run."));
+    items.some((it) => it.claude) || card.locked ? null : el("div", { class: "muted small" }, "Claude's picks will show here once Claude's research has been run."));
 
   const rows = items.map((it, i) => (it.kind === "prop" ? propItem(it, pick) : gameItem(it, pick, first)));
 
