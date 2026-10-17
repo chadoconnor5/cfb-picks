@@ -102,7 +102,7 @@ document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () 
 
 async function renderWeek(root) {
   const data = await api(`/api/pool?${weekQuery()}`);
-  if (!data.card) return renderImport(root, "Paste this week's pool email (games, questions, mid-major) and tap Import.");
+  if (!data.card || !data.items.length) return renderImport(root, "Paste this week's pool email (games, questions, mid-major) and tap Import.");
   const card = data.card, items = data.items;
   const owner = data.owner || "Ron";
   const first = owner.split(" ")[0];
@@ -144,7 +144,7 @@ async function renderWeek(root) {
     el("div", { class: "actions" }, copyBtn),
     el("details", {}, el("summary", {}, "Show the reply text"), el("textarea", { readonly: true }, data.export)),
     el("div", { class: "actions" }, fix || "",
-      card.locked ? null : el("details", {}, el("summary", {}, "Import a different card"), importBox(root))));
+      card.locked ? null : el("details", {}, el("summary", {}, "Paste a different email (replaces this week's card)"), importBox(root))));
 }
 
 function seg(options, value, onPick, disabled, result) {
