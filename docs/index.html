@@ -1,182 +1,79 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CFB Picks</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏈</text></svg>">
-  <link rel="stylesheet" href="style.css?v=202610172309">
-  <script>
-    try { const t = localStorage.getItem("cfbPicks.theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
-  </script>
+  <link rel="stylesheet" href="style.css?v=202610172320">
 </head>
 <body>
   <header>
-    <h1>CFB Picks</h1>
+    <div class="top">
+      <h1>🏈 <span class="name">CFB Picks</span></h1>
+      <div class="week-nav">
+        <button id="prevWeek" aria-label="Previous week">◀</button>
+        <span id="weekLabel">Week</span>
+        <button id="nextWeek" aria-label="Next week">▶</button>
+      </div>
+      <div class="top-right">
+        <button id="syncBadge" class="chip-btn" title="Saving">☁</button>
+        <button id="helpBtn" class="chip-btn" title="How to use this site">?</button>
+      </div>
+    </div>
     <nav>
-      <button class="tab active" data-tab="slate">Slate</button>
-      <button class="tab" data-tab="pool">Pool</button>
-      <button class="tab" data-tab="league">League</button>
-      <button class="tab" data-tab="review">Review</button>
-      <button class="tab" data-tab="record">Record</button>
-      <button class="tab" data-tab="teams">Teams</button>
-      <button id="syncBadge" class="small sync-badge" title="Sharing and saving">☁ Connect</button>
-      <button id="helpBtn" class="small help-btn" title="How to use this site">❓ Instructions</button>
-      <button id="themeToggle" class="theme-toggle small" title="Switch between dark, light and system theme">🌙 Dark</button>
+      <button class="tab active" data-tab="week">This Week</button>
+      <button class="tab" data-tab="standings">Standings</button>
+      <button class="tab" data-tab="more">More</button>
     </nav>
   </header>
 
-  <section class="controls">
-    <label>Season <input id="season" type="number" min="2000" max="2100"></label>
-    <label>Week <input id="week" type="number" min="1" max="20"></label>
-    <label>Type
-      <select id="seasonType">
-        <option value="regular">Regular</option>
-        <option value="postseason">Postseason</option>
-      </select>
-    </label>
-    <button id="loadBtn">Load</button>
-    <button id="syncBtn" title="Reload the latest game data (lines, scores, weather). GitHub rebuilds it a few times a week.">Refresh data</button>
-    <label class="filter"><input id="onlyLines" type="checkbox" checked> Only games with lines</label>
-    <label class="filter"><input id="search" type="search" placeholder="Filter teams"></label>
-    <span class="data-info hint" id="dataInfo"></span>
-    <span class="backup">
-      <button id="backupBtn" class="small" title="Download everything saved in this browser (cards, picks, league entries, reviews)">Backup</button>
-      <button id="restoreBtn" class="small" title="Load a backup file (replaces what's saved in this browser)">Restore</button>
-      <input id="restoreFile" type="file" accept="application/json,.json" hidden>
-    </span>
-  </section>
-
-  <div id="status" role="status"></div>
+  <div id="toast" role="status"></div>
 
   <main>
-    <div id="slate" class="panel"></div>
-    <div id="pool" class="panel hidden"></div>
-    <div id="league" class="panel hidden"></div>
-    <div id="review" class="panel hidden"></div>
-    <div id="record" class="panel hidden"></div>
-    <div id="teams" class="panel hidden"></div>
+    <section id="week" class="panel"></section>
+    <section id="standings" class="panel hidden"></section>
+    <section id="more" class="panel hidden"></section>
   </main>
-
-  <template id="gameTpl">
-    <article class="game">
-      <div class="game-head">
-        <div class="teams">
-          <div class="team away"></div>
-          <div class="team home"></div>
-        </div>
-        <div class="meta"></div>
-      </div>
-      <div class="lines"></div>
-      <div class="conditions"></div>
-      <details class="more-wrap">
-        <summary>Everything Claude gets (analytics, weather, history, situation, home field, coaching)</summary>
-        <div class="more"></div>
-      </details>
-      <details class="notes-wrap">
-        <summary>Notes</summary>
-        <textarea class="notes" rows="3" placeholder="Injuries, weather, motivation, etc. (added to Claude's prompt)"></textarea>
-        <button class="save-notes small">Save notes</button>
-      </details>
-      <div class="claude"></div>
-      <div class="pick"></div>
-    </article>
-  </template>
 
   <template id="helpTpl">
     <div class="help">
-      <p class="hint">This site keeps Ron O'Connor's weekly pick'em card, shows Claude's picks against the pool's lines, grades
-        everything automatically, and keeps the league standings. Game data (lines, scores, weather, stats) updates by itself.</p>
-
-      <h4>First time on a device</h4>
-      <p>Open the connect link Chad sends you (or tap <em>☁ Connect</em> at the top and paste the access key). The button then
-        reads <em>☁ Saved</em>: everything you enter is saved online and is the same on every connected phone, iPad and computer.</p>
-
-      <h4>Every week</h4>
+      <h4>Each week</h4>
       <ol>
-        <li><strong>Pick the week.</strong> Set <em>Season</em> and <em>Week</em> at the top and tap <em>Load</em>
-          (it opens on the current week).</li>
-        <li><strong>Import the card (Mon/Tue).</strong> Open the <em>Pool</em> tab, paste the whole pool email into the box
-          and tap <em>Import card</em>. Check the spreads, totals and 5-point game match the email; fix any line with
-          <em>Save line</em>.</li>
-        <li><strong>Claude's picks</strong> appear in the Claude column once Chad has Claude research the card (it looks up
-          injuries, coaching news and weather for every game). Tap <em>Load</em> or reopen the page to see them. (Anyone with
-          their own Claude chat can also use <em>Copy whole card for Claude</em> and paste the answer back.)</li>
-        <li><strong>Make Ron's picks</strong> in the pick column (or tap <em>Use all Claude picks</em>), and set the
-          combined-score tiebreaker.</li>
-        <li><strong>Send them.</strong> Under <em>Reply text</em>, tap <em>Copy picks</em> and paste into the reply email.
-          Picks lock at the deadline (Friday 12:00 PM Pacific).</li>
-        <li><strong>After the games (Sunday).</strong> Tap <em>Refresh scores</em>. For questions about players that don't
-          fill in automatically, type the real number in the <em>Result</em> box and tap <em>Set</em>.</li>
-        <li><strong>Claude learns</strong> from the week once Chad runs its review; the lessons show on the <em>Review</em> tab
-          and go into next week's picks.</li>
+        <li><strong>This Week</strong> → paste the pool email → <em>Import</em>.</li>
+        <li>Tap Ron's picks: one team and Over/Under for each game, Over/Under for each question, and the combined score.</li>
+        <li>Claude's picks show under each game once Chad has run Claude's research.</li>
+        <li>Tap <em>Copy reply</em> and paste it into the email back to the pool. Picks lock Friday at noon (Pacific).</li>
+        <li>Scores and results fill in by themselves after the games.</li>
       </ol>
-
-      <h4>League tab</h4>
-      <ul>
-        <li><em>Add everyone's picks</em>: in the league spreadsheet, select all the cells for the week (game headers through the
-          last player), copy, paste into the big box and tap <em>Import the whole sheet</em>. Set the right <em>Week</em> at the
-          top first. If there's no card for that week yet, the sheet creates it. One player at a time works too.</li>
-        <li>Ron's picks come from the Pool tab automatically (or from his "R. O'Connor" row in the sheet).</li>
-        <li><em>Weekly sheet</em> and <em>Season totals</em>: the standings (Download CSV for a spreadsheet). The Kenneys'
-          rows are light red and Ron's is gold; change colors under <em>Scoring &amp; highlights</em>.</li>
-        <li>Enter the league's posted points next to each player, then <em>Figure out the unknown rules</em> to pin down
-          the combined-score, 5-point-game and Player of the Week tie rules.</li>
-      </ul>
-
-      <h4>Other tabs</h4>
-      <ul>
-        <li><em>Slate</em>: every game this week with lines, weather and how each team's style fits it. Open
-          <em>Everything Claude gets</em> to see the data behind its picks. <em>Notes</em> you save go into Claude's prompt.</li>
-        <li><em>Review</em>: Claude's record, confidence calibration and lessons (switch a lesson off to stop using it).</li>
-        <li><em>Record</em>: picks made on the Slate tab. <em>Teams</em>: the verified 2026 FBS list.</li>
-      </ul>
-
-      <h4>Good to know</h4>
-      <ul>
-        <li><strong>Data</strong> updates Mon–Thu, Friday morning, and Saturday night/Sunday. <em>Refresh data</em> loads
-          the latest. To update right now: GitHub repo → Actions → Update data → Run workflow.</li>
-        <li><strong>The deadline is respected:</strong> after Friday noon Pacific a week's information is frozen, so Claude
-          only sees what was known by then. Past weeks can be replayed blind the same way.</li>
-        <li><strong>Saving:</strong> on a connected device (<em>☁ Saved</em>) everything is saved online automatically. If it says
-          <em>☁ Connect</em>, entries are kept only in that browser. <em>Backup</em> downloads a copy of everything any time.</li>
-      </ul>
+      <h4>Standings</h4>
+      <ol>
+        <li>Copy the whole league sheet for the week (game headers through the last player).</li>
+        <li><strong>Standings</strong> → <em>Add the league's picks</em> → paste → <em>Import</em>.</li>
+      </ol>
+      <p>Use ◀ ▶ at the top to change weeks.</p>
+      <h4>First time on a phone or computer</h4>
+      <p>Open the link Chad sends you. The ☁ at the top turns green when your picks are saved online (the same on every device).</p>
     </div>
   </template>
   <script>
-    // Instructions popup. Self-contained so it works even if app.js is cached or failed to load.
-    (function () {
-      function openHelp() {
-        if (document.querySelector(".cm-overlay.help-overlay")) return;
-        var overlay = document.createElement("div");
-        overlay.className = "cm-overlay help-overlay";
-        var box = document.createElement("div");
-        box.className = "cm";
-        box.setAttribute("role", "dialog");
-        box.setAttribute("aria-label", "Instructions");
-        var head = document.createElement("div");
-        head.className = "cm-head";
-        var h3 = document.createElement("h3");
-        h3.textContent = "How to use CFB Picks";
-        var x = document.createElement("button");
-        x.className = "small";
-        x.title = "Close";
-        x.textContent = "✕";
-        head.append(h3, x);
-        box.append(head, document.getElementById("helpTpl").content.firstElementChild.cloneNode(true));
-        overlay.append(box);
-        function close() { overlay.remove(); document.removeEventListener("keydown", esc); }
-        function esc(e) { if (e.key === "Escape") close(); }
-        x.addEventListener("click", close);
-        overlay.addEventListener("click", function (e) { if (e.target === overlay) close(); });
-        document.addEventListener("keydown", esc);
-        document.body.append(overlay);
-      }
-      document.getElementById("helpBtn").addEventListener("click", openHelp);
-    })();
+    // Instructions popup: self-contained so it always works.
+    document.getElementById("helpBtn").addEventListener("click", function () {
+      if (document.querySelector(".overlay")) return;
+      var o = document.createElement("div"); o.className = "overlay";
+      var box = document.createElement("div"); box.className = "dialog";
+      var head = document.createElement("div"); head.className = "dialog-head";
+      var h = document.createElement("h3"); h.textContent = "How to use CFB Picks";
+      var x = document.createElement("button"); x.textContent = "✕"; x.className = "chip-btn";
+      head.append(h, x); box.append(head, document.getElementById("helpTpl").content.firstElementChild.cloneNode(true)); o.append(box);
+      function close() { o.remove(); document.removeEventListener("keydown", esc); }
+      function esc(e) { if (e.key === "Escape") close(); }
+      x.addEventListener("click", close); o.addEventListener("click", function (e) { if (e.target === o) close(); });
+      document.addEventListener("keydown", esc); document.body.append(o);
+    });
   </script>
-  <script src="logic.js?v=202610172309"></script>
-  <script src="store.js?v=202610172309"></script>
-  <script src="app.js?v=202610172309"></script>
+  <script src="logic.js?v=202610172320"></script>
+  <script src="store.js?v=202610172320"></script>
+  <script src="app.js?v=202610172320"></script>
 </body>
 </html>

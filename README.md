@@ -26,20 +26,15 @@ picks, and Claude reviews its own misses each week so the next week's picks impr
 
 ## Each week
 
-1. **Mon/Tue:** open the site and set the season and week (it starts on the current week). On the **Pool** tab,
-   paste the pool email and click **Import card**. Check the spreads and totals match the email.
-2. Click **Copy whole card for Claude** and then **Copy prompt**. Paste it into a new chat at claude.ai with web
-   search on. Copy Claude's reply, paste it into the second box and click **Save Claude's answer**.
-3. Make Ron's picks in the pick column (or **Use all Claude picks**), then copy the **Reply text**
-   into the email to the pool. Picks lock at the deadline. The Pool tab's picks are Ron O'Connor's league
-   entry automatically (the name can be changed under League, then Scoring & highlights).
-4. **Sunday:** click **Refresh scores** on the Pool tab. Then **Copy review for Claude** does the weekly
-   self-review the same way; its lessons go into the following weeks' prompts.
-5. **League tab:** paste each player's picks under **Add picks**. Then use **Weekly sheet** and **Season totals**
-   (Download CSV works on both). Enter the league's posted points to let **Scoring & highlights** work out the
-   combined-score and 5-point-game rules.
+The site has three tabs and week arrows (◀ ▶) at the top; the **?** button has these steps.
 
-The **❓ Instructions** button (top right of the site) has the same steps.
+1. **This Week:** paste the pool email and tap **Import**. Tap Ron's picks (team and Over/Under per game,
+   Over/Under per question) and type the combined score. Claude's picks appear under each game once Chad has
+   run Claude's research. Tap **Copy reply for the email** and paste it into the reply to the pool.
+2. **Standings:** copy the league's whole weekly sheet, paste it under **Add the league's picks** and tap
+   **Import**. The week and season tables update by themselves as games finish.
+3. **More:** game research (everything Claude sees), copy-and-paste Claude prompts, Claude's record and
+   lessons, league scoring and row colors, saving/devices, backup.
 
 **Refresh data** reloads the newest data the Action has published. To update the data right now, run the Action
 by hand: GitHub repo, then **Actions**, then **Update data**, then **Run workflow**. To rebuild a past week for a

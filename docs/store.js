@@ -1036,8 +1036,10 @@
     let claudeTotal = 0;
     for (const card of seasonCards(season)) {
       const { entries, scored } = await weekScored(card, cfg);
-      if (entries.length) weeks.push({ week: card.week, season_type: card.season_type, complete: scored.complete, rows: scored.rows,
-                                       actual_combined: scored.actual_combined, potw: scored.rows.filter((r) => r.potw).map((r) => r.player) });
+      // one name per person across weeks ("R. O'Connor" in a sheet = the Pool tab's "Ron O'Connor")
+      const rows = scored.rows.map((r) => (L.namesMatch(r.player, owner()) ? { ...r, player: owner() } : r));
+      if (entries.length) weeks.push({ week: card.week, season_type: card.season_type, complete: scored.complete, rows,
+                                       actual_combined: scored.actual_combined, potw: rows.filter((r) => r.potw).map((r) => r.player) });
       if (scored.claude) claudeTotal += scored.claude.total;
     }
     return { weeks, claudeTotal };
