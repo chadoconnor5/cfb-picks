@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CFB Picks</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏈</text></svg>">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=202610172240">
   <script>
     try { const t = localStorage.getItem("cfbPicks.theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
   </script>
@@ -139,8 +139,40 @@
       </ul>
     </div>
   </template>
-  <script src="logic.js"></script>
-  <script src="store.js"></script>
-  <script src="app.js"></script>
+  <script>
+    // Instructions popup. Self-contained so it works even if app.js is cached or failed to load.
+    (function () {
+      function openHelp() {
+        if (document.querySelector(".cm-overlay.help-overlay")) return;
+        var overlay = document.createElement("div");
+        overlay.className = "cm-overlay help-overlay";
+        var box = document.createElement("div");
+        box.className = "cm";
+        box.setAttribute("role", "dialog");
+        box.setAttribute("aria-label", "Instructions");
+        var head = document.createElement("div");
+        head.className = "cm-head";
+        var h3 = document.createElement("h3");
+        h3.textContent = "How to use CFB Picks";
+        var x = document.createElement("button");
+        x.className = "small";
+        x.title = "Close";
+        x.textContent = "✕";
+        head.append(h3, x);
+        box.append(head, document.getElementById("helpTpl").content.firstElementChild.cloneNode(true));
+        overlay.append(box);
+        function close() { overlay.remove(); document.removeEventListener("keydown", esc); }
+        function esc(e) { if (e.key === "Escape") close(); }
+        x.addEventListener("click", close);
+        overlay.addEventListener("click", function (e) { if (e.target === overlay) close(); });
+        document.addEventListener("keydown", esc);
+        document.body.append(overlay);
+      }
+      document.getElementById("helpBtn").addEventListener("click", openHelp);
+    })();
+  </script>
+  <script src="logic.js?v=202610172240"></script>
+  <script src="store.js?v=202610172240"></script>
+  <script src="app.js?v=202610172240"></script>
 </body>
 </html>

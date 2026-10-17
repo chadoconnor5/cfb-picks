@@ -1008,16 +1008,6 @@ function propActualEditor(it) {
   return el("div", { class: "line-edit" }, inp, btn);
 }
 
-$("#helpBtn").addEventListener("click", () => {
-  const close = () => overlay.remove();
-  const overlay = el("div", { class: "cm-overlay", onclick: (e) => { if (e.target === overlay) close(); } },
-    el("div", { class: "cm", role: "dialog", "aria-label": "Instructions" },
-      el("div", { class: "cm-head" }, el("h3", {}, "How to use CFB Picks"), el("button", { class: "small", onclick: close, title: "Close" }, "✕")),
-      $("#helpTpl").content.firstElementChild.cloneNode(true)));
-  document.addEventListener("keydown", function esc(e) { if (e.key === "Escape") { close(); document.removeEventListener("keydown", esc); } });
-  document.body.append(overlay);
-});
-
 $("#backupBtn").addEventListener("click", () => {
   downloadBlob(Store.backup(), `cfb-picks-backup-${new Date().toISOString().slice(0, 10)}.json`, "application/json");
   status("Backup downloaded. Keep it somewhere safe (it holds your cards, picks, league entries and reviews).");
