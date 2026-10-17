@@ -20,6 +20,7 @@
       <button class="tab" data-tab="review">Review</button>
       <button class="tab" data-tab="record">Record</button>
       <button class="tab" data-tab="teams">Teams</button>
+      <button id="helpBtn" class="small help-btn" title="How to use this site">❓ Instructions</button>
       <button id="themeToggle" class="theme-toggle small" title="Switch between dark, light and system theme">🌙 Dark</button>
     </nav>
   </header>
@@ -81,6 +82,63 @@
     </article>
   </template>
 
+  <template id="helpTpl">
+    <div class="help">
+      <p class="hint">This site keeps Ron O'Connor's weekly pick'em card, gets Claude's picks against the pool's lines, grades
+        everything automatically, and keeps the league standings. Game data (lines, scores, weather, stats) updates by itself.</p>
+
+      <h4>Every week</h4>
+      <ol>
+        <li><strong>Pick the week.</strong> Set <em>Season</em> and <em>Week</em> at the top and tap <em>Load</em>
+          (it opens on the current week).</li>
+        <li><strong>Import the card (Mon/Tue).</strong> Open the <em>Pool</em> tab, paste the whole pool email into the box
+          and tap <em>Import card</em>. Check the spreads, totals and 5-point game match the email; fix any line with
+          <em>Save line</em>.</li>
+        <li><strong>Get Claude's picks.</strong> Tap <em>Copy whole card for Claude</em>, then <em>Copy prompt</em>.
+          Open <a href="https://claude.ai/new" target="_blank" rel="noopener">claude.ai</a>, turn on web search,
+          paste and send. When Claude finishes, copy its whole reply, paste it into the second box and tap
+          <em>Save Claude's answer</em>. If some items show a problem, tap <em>Copy for Claude</em> on just those rows.</li>
+        <li><strong>Make Ron's picks</strong> in the pick column (or tap <em>Use all Claude picks</em>), and set the
+          combined-score tiebreaker.</li>
+        <li><strong>Send them.</strong> Under <em>Reply text</em>, tap <em>Copy picks</em> and paste into the reply email.
+          Picks lock at the deadline (Friday 12:00 PM Pacific).</li>
+        <li><strong>After the games (Sunday).</strong> Tap <em>Refresh scores</em>. For questions about players that don't
+          fill in automatically, type the real number in the <em>Result</em> box and tap <em>Set</em>.</li>
+        <li><strong>Let Claude learn.</strong> Tap <em>Copy review for Claude</em> and do the same copy and paste. Its
+          lessons show on the <em>Review</em> tab and go into next week's prompts.</li>
+        <li><strong>Back up.</strong> Tap <em>Backup</em> (top) to download everything you've entered.</li>
+      </ol>
+
+      <h4>League tab</h4>
+      <ul>
+        <li><em>Add picks</em>: type a player's name, paste their picks (same format as the card) and tap
+          <em>Add / replace picks</em>. Ron's picks come from the Pool tab automatically.</li>
+        <li><em>Weekly sheet</em> and <em>Season totals</em>: the standings (Download CSV for a spreadsheet). The Kenneys'
+          rows are light red and Ron's is gold; change colors under <em>Scoring &amp; highlights</em>.</li>
+        <li>Enter the league's posted points next to each player, then <em>Figure out the unknown rules</em> to pin down
+          the combined-score, 5-point-game and Player of the Week tie rules.</li>
+      </ul>
+
+      <h4>Other tabs</h4>
+      <ul>
+        <li><em>Slate</em>: every game this week with lines, weather and how each team's style fits it. Open
+          <em>Everything Claude gets</em> to see the data behind its picks. <em>Notes</em> you save go into Claude's prompt.</li>
+        <li><em>Review</em>: Claude's record, confidence calibration and lessons (switch a lesson off to stop using it).</li>
+        <li><em>Record</em>: picks made on the Slate tab. <em>Teams</em>: the verified 2026 FBS list.</li>
+      </ul>
+
+      <h4>Good to know</h4>
+      <ul>
+        <li><strong>Data</strong> updates Mon–Thu, Friday morning, and Saturday night/Sunday. <em>Refresh data</em> loads
+          the latest. To update right now: GitHub repo → Actions → Update data → Run workflow.</li>
+        <li><strong>The deadline is respected:</strong> after Friday noon Pacific a week's information is frozen, so Claude
+          only sees what was known by then. Past weeks can be replayed blind the same way.</li>
+        <li><strong>Your entries live in this browser</strong> (phone, iPad and computer each keep their own). Use
+          <em>Backup</em> on one device and <em>Restore</em> on another to move them. Clearing browser data erases them,
+          so back up weekly.</li>
+      </ul>
+    </div>
+  </template>
   <script src="logic.js"></script>
   <script src="store.js"></script>
   <script src="app.js"></script>

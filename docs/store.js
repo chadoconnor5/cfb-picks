@@ -201,6 +201,7 @@
       scoring_note: `League scoring: spread ${cfg.ats}, O/U ${cfg.ou}, question ${cfg.prop}, mid-major ${cfg.mid_major}, ` +
         "N-Point Game per the League tab. Combined-score and POTW points show on the League tab.",
       data_note: wd ? null : "No game data for this week yet.",
+      owner: owner(),
     };
   }
 
@@ -556,6 +557,31 @@
 
   // ---------- league routes ----------
 
+  // The Pool tab's picks are the owner's (Ron O'Connor by default): his league entry comes from them, so he
+  // never has to be pasted in. A pasted entry under the same name replaces it.
+  const owner = () => S.owner || "Ron O'Connor";
+
+  function ownerEntry(card, items) {
+    const picks = {};
+    let any = false, proj = 0;
+    for (const it of items) {
+      if (it.kind === "prop") { picks[String(it.idx)] = { pick: it.my_prop || null }; any = any || Boolean(it.my_prop); }
+      else { picks[String(it.idx)] = { ats: it.my_ats || null, ou: it.my_ou || null }; any = any || Boolean(it.my_ats || it.my_ou); }
+      if (it.kind === "game" && it.claude && it.claude.proj_home != null) proj += it.claude.proj_home + it.claude.proj_away;
+    }
+    if (!any) return null;
+    const tb = card.tiebreaker != null ? card.tiebreaker : (card.has_tiebreaker && proj ? L.pyRound(proj) : null);
+    return { id: null, player: owner(), picks, tiebreaker: tb, reported_points: card.owner_reported_points ?? null,
+             warnings: [], from_pool: true };
+  }
+
+  function allEntries(card, items) {
+    const pasted = entriesFor(card);
+    const mine = ownerEntry(card, items);
+    if (mine && !pasted.some((e) => L.normName(e.player) === L.normName(mine.player))) pasted.push(mine);
+    return pasted.sort((a, b) => (a.player < b.player ? -1 : a.player > b.player ? 1 : 0));
+  }
+
   function entriesFor(card) {
     const m = S.entries[cardKey(card.season, card.week, card.season_type)] || {};
     return Object.entries(m).map(([player, e]) => ({ id: e.id, player, picks: e.picks, tiebreaker: e.tiebreaker,
@@ -589,7 +615,7 @@
 
   async function weekScored(card, cfg) {
     const items = (await cardPayload(card)).items;
-    const entries = entriesFor(card);
+    const entries = allEntries(card, items);
     const scored = L.scoreWeek(items, entries, cfg);
     const ce = claudeEntry(items);
     if (ce) {   // scored on its own so it never takes Player of the Week from a real member
@@ -653,10 +679,11 @@
     for (const r of scored.rows) {
       const e = by[r.player] || {};
       r.entry_id = e.id; r.reported_points = e.reported_points === undefined ? null : e.reported_points; r.warnings = e.warnings || [];
+      r.from_pool = Boolean(e.from_pool);
     }
     const labels = items.map((it) => ({ idx: it.idx, kind: it.kind, label: it.kind === "prop" ? `Q${it.data.n}` : `${it.data.away} @ ${it.data.home}`,
                                         home: it.data.home || null, away: it.data.away || null, weight: it.data.weight || 1 }));
-    return { card_id: card.id, week: card.week, items: labels, scoring: cfg, ...scored };
+    return { card_id: card.id, week: card.week, items: labels, scoring: cfg, owner: owner(), ...scored };
   }
 
   async function seasonWeeks(season, cfg) {
@@ -682,7 +709,10 @@
   async function inferView(season) {
     const cfg = scoring();
     const weeks = [];
-    for (const card of seasonCards(season)) weeks.push({ week: card.week, items: (await cardPayload(card)).items, entries: entriesFor(card) });
+    for (const card of seasonCards(season)) {
+      const items = (await cardPayload(card)).items;
+      weeks.push({ week: card.week, items, entries: allEntries(card, items) });
+    }
     return L.inferRules(weeks, cfg);
   }
 
@@ -962,6 +992,18 @@
     ["GET", /^\/api\/league\/leaderboard$/, (m, q) => leaderboardView(Number(q.get("season")))],
     ["GET", /^\/api\/league\/infer$/, (m, q) => inferView(Number(q.get("season")))],
     ["GET", /^\/api\/league\/highlights$/, () => highlights()],
+    ["GET", /^\/api\/league\/owner$/, () => ({ owner: owner() })],
+    ["POST", /^\/api\/league\/owner$/, (m, q, b) => {
+      const n = String(b.owner || "").trim();
+      if (!n) err("Enter a name.");
+      S.owner = n; save(); return { owner: n };
+    }],
+    ["POST", /^\/api\/league\/owner-points\/(\d+)$/, (m, q, b) => {
+      const card = cardById(m[1]);
+      const v = b.reported_points;
+      card.owner_reported_points = v !== null && v !== undefined && v !== "" ? Number(v) : null;
+      save(); return { ok: true };
+    }],
     ["POST", /^\/api\/league\/highlights$/, (m, q, b) => {
       const clean = {};
       for (const [k, v] of Object.entries(b || {})) if (String(k).trim() && ["red", "gold", "green", "blue"].includes(v)) clean[String(k).trim()] = v;

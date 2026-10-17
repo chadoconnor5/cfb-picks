@@ -281,3 +281,9 @@ pre.ctx-text { white-space: pre-wrap; font-size: 12px; line-height: 1.45; max-he
   main, .panel { min-width: 0; }
   .pool-table td, .pool-table th { padding: 6px 4px; }
 }
+.help-btn { margin-left: 8px; }
+.help { line-height: 1.5; }
+.help h4 { margin: 16px 0 6px; }
+.help ol, .help ul { padding-left: 20px; margin: 0; }
+.help li { margin: 4px 0; }
+.help a { color: var(--accent); }

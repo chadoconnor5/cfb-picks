@@ -645,7 +645,7 @@ async function loadPool() {
     data.card.locked ? el("p", { class: "hint" }, "Deadline passed: your picks are locked. Claude can still run a strict replay (only information from before the deadline) for testing.") : "",
     el("div", { class: "pool-actions" }, predictAll, useAll, gradeBtn, reviewBtn),
     el("div", { class: "table-wrap" }, el("table", { class: "pool-table" },
-      el("thead", {}, el("tr", {}, ["", "Game & pool line", "Claude (vs pool line)", "My pick", "Result"].map((h) => el("th", {}, h)))),
+      el("thead", {}, el("tr", {}, ["", "Game & pool line", "Claude (vs pool line)", `${data.owner}'s pick`, "Result"].map((h) => el("th", {}, h)))),
       el("tbody", {}, rows))),
     addForms || "",
     !data.card.has_tiebreaker ? "" : el("div", { class: "pool-actions" }, "Tiebreaker (combined score):", tbInput, tbSave,
@@ -730,12 +730,15 @@ async function loadLeague() {
         el("thead", {}, el("tr", {}, ["Player", "Combined guess", "League's posted points", "Ours", "Notes", ""].map((h) => el("th", {}, h)))),
         el("tbody", {}, w.rows.map((r) => {
           const posted = el("input", { type: "number", value: r.reported_points ?? "", class: "line-in" });
-          posted.addEventListener("change", async () => { await api(`/api/league/entries/${r.entry_id}`, { method: "POST", body: { reported_points: posted.value } }); loadLeague(); });
+          posted.addEventListener("change", async () => {
+            await api(r.from_pool ? `/api/league/owner-points/${w.card_id}` : `/api/league/entries/${r.entry_id}`, { method: "POST", body: { reported_points: posted.value } });
+            loadLeague();
+          });
           const diff = r.reported_points != null ? r.total - r.reported_points : null;
           return el("tr", { class: hlClass(highlightOf(r.player, hl)) }, el("td", {}, r.player), el("td", {}, r.tiebreaker ?? "—"), el("td", {}, posted),
             el("td", {}, r.total, diff != null ? el("span", { class: diff === 0 ? "diff-ok" : "diff-bad" }, diff === 0 ? " ✓" : ` (${diff > 0 ? "+" : ""}${diff})`) : ""),
-            el("td", { class: "warn", style: "white-space:normal" }, (r.warnings || []).join("; ")),
-            el("td", {}, el("button", { class: "small", onclick: async () => { if (confirm(`Remove ${r.player}'s picks for this week?`)) { await api(`/api/league/entries/${r.entry_id}`, { method: "DELETE" }); loadLeague(); } } }, "✕")));
+            el("td", { class: r.from_pool ? "hint" : "warn", style: "white-space:normal" }, r.from_pool ? "From the Pool tab (your picks)" : (r.warnings || []).join("; ")),
+            el("td", {}, r.from_pool ? "" : el("button", { class: "small", onclick: async () => { if (confirm(`Remove ${r.player}'s picks for this week?`)) { await api(`/api/league/entries/${r.entry_id}`, { method: "DELETE" }); loadLeague(); } } }, "✕")));
         }))));
     } catch (e) { entryList = el("p", { class: "warn" }, e.message); }
     body = el("div", {},
@@ -770,6 +773,12 @@ async function loadLeague() {
       const c = el("select", {}, [["red", "Light red"], ["gold", "Gold"], ["green", "Light green"], ["blue", "Light blue"]].map(([v, l]) => el("option", { value: v, selected: r.color === v }, l)));
       return { n, c, row: el("div", { class: "pool-actions" }, n, c) };
     });
+    const ownerIn = el("input", { type: "text", value: (await api("/api/league/owner")).owner });
+    const saveOwner = el("button", { class: "small" }, "Save name");
+    saveOwner.addEventListener("click", async () => {
+      try { await api("/api/league/owner", { method: "POST", body: { owner: ownerIn.value } }); status("Saved."); loadLeague(); }
+      catch (e) { status(e.message, true); }
+    });
     const saveHl = el("button", { class: "small" }, "Save highlights");
     saveHl.addEventListener("click", async () => {
       const out = {};
@@ -794,6 +803,9 @@ async function loadLeague() {
     }));
 
     body = el("div", {},
+      el("h3", {}, "Whose picks are on the Pool tab"),
+      el("p", { class: "hint" }, "The Pool tab's picks count as this player's league entry automatically (no need to paste them)."),
+      el("div", { class: "pool-actions" }, ownerIn, saveOwner),
       el("h3", {}, "Scoring"),
       el("p", { class: "hint" }, `Spread ${cfg.ats}, O/U ${cfg.ou}, question ${cfg.prop}, mid-major ${cfg.mid_major}, POTW +${cfg.potw_bonus}. Combined score: ${cfg.tiebreak.type}.`),
       el("div", { class: "scoring-form" }, ...fields,
@@ -995,6 +1007,16 @@ function propActualEditor(it) {
   });
   return el("div", { class: "line-edit" }, inp, btn);
 }
+
+$("#helpBtn").addEventListener("click", () => {
+  const close = () => overlay.remove();
+  const overlay = el("div", { class: "cm-overlay", onclick: (e) => { if (e.target === overlay) close(); } },
+    el("div", { class: "cm", role: "dialog", "aria-label": "Instructions" },
+      el("div", { class: "cm-head" }, el("h3", {}, "How to use CFB Picks"), el("button", { class: "small", onclick: close, title: "Close" }, "✕")),
+      $("#helpTpl").content.firstElementChild.cloneNode(true)));
+  document.addEventListener("keydown", function esc(e) { if (e.key === "Escape") { close(); document.removeEventListener("keydown", esc); } });
+  document.body.append(overlay);
+});
 
 $("#backupBtn").addEventListener("click", () => {
   downloadBlob(Store.backup(), `cfb-picks-backup-${new Date().toISOString().slice(0, 10)}.json`, "application/json");
