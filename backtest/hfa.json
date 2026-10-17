@@ -1,0 +1,2787 @@
+{
+ "n_games": 3368,
+ "league_by_season": {
+  "2022": {
+   "n": 830,
+   "home_cover_margin": -0.36,
+   "home_ats": {
+    "w": 408,
+    "l": 409,
+    "n": 817,
+    "pct": 49.9,
+    "ci95": [
+     46.5,
+     53.4
+    ]
+   }
+  },
+  "2023": {
+   "n": 844,
+   "home_cover_margin": -0.17,
+   "home_ats": {
+    "w": 398,
+    "l": 430,
+    "n": 828,
+    "pct": 48.1,
+    "ci95": [
+     44.7,
+     51.5
+    ]
+   }
+  },
+  "2024": {
+   "n": 824,
+   "home_cover_margin": 1.04,
+   "home_ats": {
+    "w": 414,
+    "l": 394,
+    "n": 808,
+    "pct": 51.2,
+    "ci95": [
+     47.8,
+     54.7
+    ]
+   }
+  },
+  "2025": {
+   "n": 870,
+   "home_cover_margin": 1.05,
+   "home_ats": {
+    "w": 443,
+    "l": 410,
+    "n": 853,
+    "pct": 51.9,
+    "ci95": [
+     48.6,
+     55.3
+    ]
+   }
+  }
+ },
+ "league": {
+  "home_cover_margin": 0.39,
+  "home_ats": {
+   "w": 1663,
+   "l": 1643,
+   "n": 3306,
+   "pct": 50.3,
+   "ci95": [
+    48.6,
+    52.0
+   ]
+  }
+ },
+ "shrinkage_k": 81.6,
+ "teams": {
+  "Hawai'i": {
+   "n_home": 28,
+   "home_cover_margin": 4.13,
+   "home_edge_shrunk": 1.06,
+   "home_ats": {
+    "w": 19,
+    "l": 8,
+    "n": 27,
+    "pct": 70.4,
+    "ci95": [
+     51.5,
+     84.1
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": -5.08,
+   "avg_fill": 0.79,
+   "avg_attendance": 12004
+  },
+  "Alabama": {
+   "n_home": 28,
+   "home_cover_margin": 3.75,
+   "home_edge_shrunk": 0.96,
+   "home_ats": {
+    "w": 20,
+    "l": 7,
+    "n": 27,
+    "pct": 74.1,
+    "ci95": [
+     55.3,
+     86.8
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": -4.43,
+   "avg_fill": 0.98,
+   "avg_attendance": 99803
+  },
+  "Arkansas": {
+   "n_home": 25,
+   "home_cover_margin": -9.18,
+   "home_edge_shrunk": -2.15,
+   "home_ats": {
+    "w": 7,
+    "l": 18,
+    "n": 25,
+    "pct": 28.0,
+    "ci95": [
+     14.3,
+     47.6
+    ]
+   },
+   "n_away": 17,
+   "away_cover_margin": 4.76,
+   "avg_fill": 0.892,
+   "avg_attendance": 71353
+  },
+  "Auburn": {
+   "n_home": 30,
+   "home_cover_margin": -3.27,
+   "home_edge_shrunk": -0.88,
+   "home_ats": {
+    "w": 12,
+    "l": 17,
+    "n": 29,
+    "pct": 41.4,
+    "ci95": [
+     25.5,
+     59.3
+    ]
+   },
+   "n_away": 18,
+   "away_cover_margin": 3.25,
+   "avg_fill": 0.989,
+   "avg_attendance": 86468
+  },
+  "Florida": {
+   "n_home": 26,
+   "home_cover_margin": 0.65,
+   "home_edge_shrunk": 0.16,
+   "home_ats": {
+    "w": 12,
+    "l": 14,
+    "n": 26,
+    "pct": 46.2,
+    "ci95": [
+     28.8,
+     64.5
+    ]
+   },
+   "n_away": 18,
+   "away_cover_margin": -3.06,
+   "avg_fill": 1.007,
+   "avg_attendance": 89150
+  },
+  "Kentucky": {
+   "n_home": 30,
+   "home_cover_margin": -1.95,
+   "home_edge_shrunk": -0.52,
+   "home_ats": {
+    "w": 16,
+    "l": 14,
+    "n": 30,
+    "pct": 53.3,
+    "ci95": [
+     36.1,
+     69.8
+    ]
+   },
+   "n_away": 18,
+   "away_cover_margin": -3.33,
+   "avg_fill": 0.978,
+   "avg_attendance": 59649
+  },
+  "Ole Miss": {
+   "n_home": 30,
+   "home_cover_margin": 3.15,
+   "home_edge_shrunk": 0.85,
+   "home_ats": {
+    "w": 16,
+    "l": 13,
+    "n": 29,
+    "pct": 55.2,
+    "ci95": [
+     37.5,
+     71.6
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": 0.93,
+   "avg_fill": 1.018,
+   "avg_attendance": 65189
+  },
+  "Mississippi State": {
+   "n_home": 29,
+   "home_cover_margin": -1.2,
+   "home_edge_shrunk": -0.31,
+   "home_ats": {
+    "w": 15,
+    "l": 13,
+    "n": 28,
+    "pct": 53.6,
+    "ci95": [
+     35.8,
+     70.5
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": 0.91,
+   "avg_fill": 0.857,
+   "avg_attendance": 52589
+  },
+  "South Carolina": {
+   "n_home": 28,
+   "home_cover_margin": 1.94,
+   "home_edge_shrunk": 0.5,
+   "home_ats": {
+    "w": 15,
+    "l": 13,
+    "n": 28,
+    "pct": 53.6,
+    "ci95": [
+     35.8,
+     70.5
+    ]
+   },
+   "n_away": 18,
+   "away_cover_margin": 6.31,
+   "avg_fill": 0.973,
+   "avg_attendance": 78070
+  },
+  "Tennessee": {
+   "n_home": 28,
+   "home_cover_margin": 2.88,
+   "home_edge_shrunk": 0.74,
+   "home_ats": {
+    "w": 16,
+    "l": 12,
+    "n": 28,
+    "pct": 57.1,
+    "ci95": [
+     39.1,
+     73.5
+    ]
+   },
+   "n_away": 18,
+   "away_cover_margin": -2.71,
+   "avg_fill": 0.991,
+   "avg_attendance": 101557
+  },
+  "Texas A&M": {
+   "n_home": 29,
+   "home_cover_margin": -1.62,
+   "home_edge_shrunk": -0.42,
+   "home_ats": {
+    "w": 10,
+    "l": 18,
+    "n": 28,
+    "pct": 35.7,
+    "ci95": [
+     20.7,
+     54.2
+    ]
+   },
+   "n_away": 17,
+   "away_cover_margin": -2.0,
+   "avg_fill": 0.983,
+   "avg_attendance": 101027
+  },
+  "Vanderbilt": {
+   "n_home": 26,
+   "home_cover_margin": 1.89,
+   "home_edge_shrunk": 0.46,
+   "home_ats": {
+    "w": 12,
+    "l": 14,
+    "n": 26,
+    "pct": 46.2,
+    "ci95": [
+     28.8,
+     64.5
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": 5.83,
+   "avg_fill": 0.733,
+   "avg_attendance": 29584
+  },
+  "Texas": {
+   "n_home": 27,
+   "home_cover_margin": 2.41,
+   "home_edge_shrunk": 0.6,
+   "home_ats": {
+    "w": 16,
+    "l": 11,
+    "n": 27,
+    "pct": 59.3,
+    "ci95": [
+     40.7,
+     75.5
+    ]
+   },
+   "n_away": 18,
+   "away_cover_margin": -1.58,
+   "avg_fill": 1.015,
+   "avg_attendance": 101611
+  },
+  "Georgia": {
+   "n_home": 26,
+   "home_cover_margin": -3.88,
+   "home_edge_shrunk": -0.94,
+   "home_ats": {
+    "w": 9,
+    "l": 16,
+    "n": 25,
+    "pct": 36.0,
+    "ci95": [
+     20.2,
+     55.5
+    ]
+   },
+   "n_away": 15,
+   "away_cover_margin": -3.3,
+   "avg_fill": 1.002,
+   "avg_attendance": 92890
+  },
+  "LSU": {
+   "n_home": 28,
+   "home_cover_margin": 0.7,
+   "home_edge_shrunk": 0.18,
+   "home_ats": {
+    "w": 17,
+    "l": 11,
+    "n": 28,
+    "pct": 60.7,
+    "ci95": [
+     42.4,
+     76.4
+    ]
+   },
+   "n_away": 17,
+   "away_cover_margin": -0.96,
+   "avg_fill": 0.987,
+   "avg_attendance": 101037
+  },
+  "Arizona": {
+   "n_home": 27,
+   "home_cover_margin": 0.58,
+   "home_edge_shrunk": 0.15,
+   "home_ats": {
+    "w": 15,
+    "l": 12,
+    "n": 27,
+    "pct": 55.6,
+    "ci95": [
+     37.3,
+     72.4
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": 3.5,
+   "avg_fill": 0.885,
+   "avg_attendance": 44929
+  },
+  "Kansas State": {
+   "n_home": 26,
+   "home_cover_margin": 5.05,
+   "home_edge_shrunk": 1.22,
+   "home_ats": {
+    "w": 16,
+    "l": 10,
+    "n": 26,
+    "pct": 61.5,
+    "ci95": [
+     42.5,
+     77.6
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": 1.49,
+   "avg_fill": 1.032,
+   "avg_attendance": 51598
+  },
+  "Pittsburgh": {
+   "n_home": 27,
+   "home_cover_margin": 2.4,
+   "home_edge_shrunk": 0.6,
+   "home_ats": {
+    "w": 15,
+    "l": 12,
+    "n": 27,
+    "pct": 55.6,
+    "ci95": [
+     37.3,
+     72.4
+    ]
+   },
+   "n_away": 20,
+   "away_cover_margin": -2.54,
+   "avg_fill": 0.761,
+   "avg_attendance": 52080
+  },
+  "Georgia Tech": {
+   "n_home": 22,
+   "home_cover_margin": -2.76,
+   "home_edge_shrunk": -0.59,
+   "home_ats": {
+    "w": 11,
+    "l": 10,
+    "n": 21,
+    "pct": 52.4,
+    "ci95": [
+     32.4,
+     71.7
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": 5.08,
+   "avg_fill": 0.717,
+   "avg_attendance": 39418
+  },
+  "Missouri": {
+   "n_home": 29,
+   "home_cover_margin": 1.75,
+   "home_edge_shrunk": 0.46,
+   "home_ats": {
+    "w": 16,
+    "l": 12,
+    "n": 28,
+    "pct": 57.1,
+    "ci95": [
+     39.1,
+     73.5
+    ]
+   },
+   "n_away": 18,
+   "away_cover_margin": 1.18,
+   "avg_fill": 0.824,
+   "avg_attendance": 58613
+  },
+  "Northern Illinois": {
+   "n_home": 24,
+   "home_cover_margin": -7.64,
+   "home_edge_shrunk": -1.74,
+   "home_ats": {
+    "w": 4,
+    "l": 19,
+    "n": 23,
+    "pct": 17.4,
+    "ci95": [
+     7.0,
+     37.1
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": 3.38,
+   "avg_fill": 0.425,
+   "avg_attendance": 10031
+  },
+  "BYU": {
+   "n_home": 22,
+   "home_cover_margin": 3.05,
+   "home_edge_shrunk": 0.65,
+   "home_ats": {
+    "w": 11,
+    "l": 10,
+    "n": 21,
+    "pct": 52.4,
+    "ci95": [
+     32.4,
+     71.7
+    ]
+   },
+   "n_away": 23,
+   "away_cover_margin": 1.32,
+   "avg_fill": 0.981,
+   "avg_attendance": 62261
+  },
+  "Florida State": {
+   "n_home": 26,
+   "home_cover_margin": 1.78,
+   "home_edge_shrunk": 0.43,
+   "home_ats": {
+    "w": 14,
+    "l": 12,
+    "n": 26,
+    "pct": 53.8,
+    "ci95": [
+     35.5,
+     71.2
+    ]
+   },
+   "n_away": 18,
+   "away_cover_margin": -4.79,
+   "avg_fill": 0.969,
+   "avg_attendance": 65215
+  },
+  "Clemson": {
+   "n_home": 28,
+   "home_cover_margin": -3.69,
+   "home_edge_shrunk": -0.94,
+   "home_ats": {
+    "w": 11,
+    "l": 17,
+    "n": 28,
+    "pct": 39.3,
+    "ci95": [
+     23.6,
+     57.6
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": -0.97,
+   "avg_fill": 0.988,
+   "avg_attendance": 80494
+  },
+  "Arizona State": {
+   "n_home": 27,
+   "home_cover_margin": -2.65,
+   "home_edge_shrunk": -0.66,
+   "home_ats": {
+    "w": 12,
+    "l": 13,
+    "n": 25,
+    "pct": 48.0,
+    "ci95": [
+     30.0,
+     66.5
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": 3.86,
+   "avg_fill": 0.745,
+   "avg_attendance": 49046
+  },
+  "Colorado": {
+   "n_home": 25,
+   "home_cover_margin": 0.92,
+   "home_edge_shrunk": 0.22,
+   "home_ats": {
+    "w": 15,
+    "l": 10,
+    "n": 25,
+    "pct": 60.0,
+    "ci95": [
+     40.7,
+     76.6
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": -1.56,
+   "avg_fill": 0.992,
+   "avg_attendance": 49781
+  },
+  "San Diego State": {
+   "n_home": 25,
+   "home_cover_margin": 1.47,
+   "home_edge_shrunk": 0.34,
+   "home_ats": {
+    "w": 13,
+    "l": 12,
+    "n": 25,
+    "pct": 52.0,
+    "ci95": [
+     33.5,
+     70.0
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": -2.17,
+   "avg_fill": 0.753,
+   "avg_attendance": 26359
+  },
+  "California": {
+   "n_home": 26,
+   "home_cover_margin": 0.07,
+   "home_edge_shrunk": 0.02,
+   "home_ats": {
+    "w": 13,
+    "l": 13,
+    "n": 26,
+    "pct": 50.0,
+    "ci95": [
+     32.1,
+     67.9
+    ]
+   },
+   "n_away": 23,
+   "away_cover_margin": -1.02,
+   "avg_fill": 0.607,
+   "avg_attendance": 37940
+  },
+  "Oregon State": {
+   "n_home": 26,
+   "home_cover_margin": 2.07,
+   "home_edge_shrunk": 0.5,
+   "home_ats": {
+    "w": 15,
+    "l": 11,
+    "n": 26,
+    "pct": 57.7,
+    "ci95": [
+     38.9,
+     74.5
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": -4.35,
+   "avg_fill": 0.788,
+   "avg_attendance": 34180
+  },
+  "Stanford": {
+   "n_home": 25,
+   "home_cover_margin": 0.02,
+   "home_edge_shrunk": 0.0,
+   "home_ats": {
+    "w": 10,
+    "l": 14,
+    "n": 24,
+    "pct": 41.7,
+    "ci95": [
+     24.5,
+     61.2
+    ]
+   },
+   "n_away": 23,
+   "away_cover_margin": -2.16,
+   "avg_fill": 0.584,
+   "avg_attendance": 29472
+  },
+  "UCLA": {
+   "n_home": 26,
+   "home_cover_margin": -5.54,
+   "home_edge_shrunk": -1.34,
+   "home_ats": {
+    "w": 9,
+    "l": 17,
+    "n": 26,
+    "pct": 34.6,
+    "ci95": [
+     19.4,
+     53.8
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": 1.81,
+   "avg_fill": 0.489,
+   "avg_attendance": 43268
+  },
+  "Washington": {
+   "n_home": 27,
+   "home_cover_margin": 4.31,
+   "home_edge_shrunk": 1.07,
+   "home_ats": {
+    "w": 16,
+    "l": 10,
+    "n": 26,
+    "pct": 61.5,
+    "ci95": [
+     42.5,
+     77.6
+    ]
+   },
+   "n_away": 20,
+   "away_cover_margin": -2.59,
+   "avg_fill": 0.963,
+   "avg_attendance": 67522
+  },
+  "Washington State": {
+   "n_home": 25,
+   "home_cover_margin": 2.05,
+   "home_edge_shrunk": 0.48,
+   "home_ats": {
+    "w": 16,
+    "l": 9,
+    "n": 25,
+    "pct": 64.0,
+    "ci95": [
+     44.5,
+     79.8
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": 1.69,
+   "avg_fill": 0.786,
+   "avg_attendance": 25894
+  },
+  "Oklahoma State": {
+   "n_home": 27,
+   "home_cover_margin": -1.28,
+   "home_edge_shrunk": -0.32,
+   "home_ats": {
+    "w": 12,
+    "l": 15,
+    "n": 27,
+    "pct": 44.4,
+    "ci95": [
+     27.6,
+     62.7
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": -7.1,
+   "avg_fill": 0.925,
+   "avg_attendance": 51342
+  },
+  "Air Force": {
+   "n_home": 24,
+   "home_cover_margin": 0.14,
+   "home_edge_shrunk": 0.03,
+   "home_ats": {
+    "w": 9,
+    "l": 15,
+    "n": 24,
+    "pct": 37.5,
+    "ci95": [
+     21.2,
+     57.3
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": -0.93,
+   "avg_fill": 0.563,
+   "avg_attendance": 26297
+  },
+  "Oregon": {
+   "n_home": 27,
+   "home_cover_margin": 4.81,
+   "home_edge_shrunk": 1.19,
+   "home_ats": {
+    "w": 17,
+    "l": 9,
+    "n": 26,
+    "pct": 65.4,
+    "ci95": [
+     46.2,
+     80.6
+    ]
+   },
+   "n_away": 20,
+   "away_cover_margin": 5.86,
+   "avg_fill": 1.058,
+   "avg_attendance": 57145
+  },
+  "Fresno State": {
+   "n_home": 24,
+   "home_cover_margin": 0.43,
+   "home_edge_shrunk": 0.1,
+   "home_ats": {
+    "w": 11,
+    "l": 13,
+    "n": 24,
+    "pct": 45.8,
+    "ci95": [
+     27.9,
+     64.9
+    ]
+   },
+   "n_away": 25,
+   "away_cover_margin": -2.29,
+   "avg_fill": 0.96,
+   "avg_attendance": 39409
+  },
+  "Utah": {
+   "n_home": 25,
+   "home_cover_margin": 4.37,
+   "home_edge_shrunk": 1.02,
+   "home_ats": {
+    "w": 16,
+    "l": 9,
+    "n": 25,
+    "pct": 64.0,
+    "ci95": [
+     44.5,
+     79.8
+    ]
+   },
+   "n_away": 23,
+   "away_cover_margin": 0.87,
+   "avg_fill": 1.017,
+   "avg_attendance": 52313
+  },
+  "Wisconsin": {
+   "n_home": 28,
+   "home_cover_margin": -3.89,
+   "home_edge_shrunk": -0.99,
+   "home_ats": {
+    "w": 11,
+    "l": 16,
+    "n": 27,
+    "pct": 40.7,
+    "ci95": [
+     24.5,
+     59.3
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": -1.71,
+   "avg_fill": 0.924,
+   "avg_attendance": 74199
+  },
+  "Notre Dame": {
+   "n_home": 26,
+   "home_cover_margin": 4.06,
+   "home_edge_shrunk": 0.98,
+   "home_ats": {
+    "w": 14,
+    "l": 11,
+    "n": 25,
+    "pct": 56.0,
+    "ci95": [
+     37.1,
+     73.3
+    ]
+   },
+   "n_away": 17,
+   "away_cover_margin": 6.87,
+   "avg_fill": 0.957,
+   "avg_attendance": 77292
+  },
+  "Minnesota": {
+   "n_home": 28,
+   "home_cover_margin": 4.01,
+   "home_edge_shrunk": 1.02,
+   "home_ats": {
+    "w": 15,
+    "l": 13,
+    "n": 28,
+    "pct": 53.6,
+    "ci95": [
+     35.8,
+     70.5
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": -5.71,
+   "avg_fill": 0.922,
+   "avg_attendance": 46864
+  },
+  "USC": {
+   "n_home": 27,
+   "home_cover_margin": 2.57,
+   "home_edge_shrunk": 0.64,
+   "home_ats": {
+    "w": 16,
+    "l": 11,
+    "n": 27,
+    "pct": 59.3,
+    "ci95": [
+     40.7,
+     75.5
+    ]
+   },
+   "n_away": 20,
+   "away_cover_margin": -5.83,
+   "avg_fill": 0.869,
+   "avg_attendance": 67358
+  },
+  "Kansas": {
+   "n_home": 20,
+   "home_cover_margin": 1.68,
+   "home_edge_shrunk": 0.33,
+   "home_ats": {
+    "w": 11,
+    "l": 7,
+    "n": 18,
+    "pct": 61.1,
+    "ci95": [
+     38.6,
+     79.7
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": -1.57,
+   "avg_fill": 0.913,
+   "avg_attendance": 42906
+  },
+  "Texas Tech": {
+   "n_home": 27,
+   "home_cover_margin": 3.39,
+   "home_edge_shrunk": 0.84,
+   "home_ats": {
+    "w": 17,
+    "l": 8,
+    "n": 25,
+    "pct": 68.0,
+    "ci95": [
+     48.4,
+     82.8
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": 1.45,
+   "avg_fill": 0.952,
+   "avg_attendance": 57572
+  },
+  "Iowa State": {
+   "n_home": 27,
+   "home_cover_margin": 1.9,
+   "home_edge_shrunk": 0.47,
+   "home_ats": {
+    "w": 12,
+    "l": 13,
+    "n": 25,
+    "pct": 48.0,
+    "ci95": [
+     30.0,
+     66.5
+    ]
+   },
+   "n_away": 20,
+   "away_cover_margin": 0.61,
+   "avg_fill": 0.955,
+   "avg_attendance": 58625
+  },
+  "Iowa": {
+   "n_home": 27,
+   "home_cover_margin": 2.23,
+   "home_edge_shrunk": 0.55,
+   "home_ats": {
+    "w": 13,
+    "l": 13,
+    "n": 26,
+    "pct": 50.0,
+    "ci95": [
+     32.1,
+     67.9
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": 4.3,
+   "avg_fill": 1.0,
+   "avg_attendance": 69250
+  },
+  "West Virginia": {
+   "n_home": 25,
+   "home_cover_margin": -1.35,
+   "home_edge_shrunk": -0.32,
+   "home_ats": {
+    "w": 14,
+    "l": 11,
+    "n": 25,
+    "pct": 56.0,
+    "ci95": [
+     37.1,
+     73.3
+    ]
+   },
+   "n_away": 23,
+   "away_cover_margin": -1.52,
+   "avg_fill": 0.858,
+   "avg_attendance": 51485
+  },
+  "Oklahoma": {
+   "n_home": 27,
+   "home_cover_margin": 0.68,
+   "home_edge_shrunk": 0.17,
+   "home_ats": {
+    "w": 14,
+    "l": 13,
+    "n": 27,
+    "pct": 51.9,
+    "ci95": [
+     34.0,
+     69.3
+    ]
+   },
+   "n_away": 18,
+   "away_cover_margin": 0.33,
+   "avg_fill": 0.972,
+   "avg_attendance": 83665
+  },
+  "TCU": {
+   "n_home": 25,
+   "home_cover_margin": 3.24,
+   "home_edge_shrunk": 0.76,
+   "home_ats": {
+    "w": 15,
+    "l": 10,
+    "n": 25,
+    "pct": 60.0,
+    "ci95": [
+     40.7,
+     76.6
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": -2.56,
+   "avg_fill": 0.99,
+   "avg_attendance": 45529
+  },
+  "Houston": {
+   "n_home": 25,
+   "home_cover_margin": -2.74,
+   "home_edge_shrunk": -0.64,
+   "home_ats": {
+    "w": 10,
+    "l": 15,
+    "n": 25,
+    "pct": 40.0,
+    "ci95": [
+     23.4,
+     59.3
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": 2.3,
+   "avg_fill": 0.759,
+   "avg_attendance": 30349
+  },
+  "Nebraska": {
+   "n_home": 28,
+   "home_cover_margin": -1.04,
+   "home_edge_shrunk": -0.26,
+   "home_ats": {
+    "w": 13,
+    "l": 14,
+    "n": 27,
+    "pct": 48.1,
+    "ci95": [
+     30.7,
+     66.0
+    ]
+   },
+   "n_away": 18,
+   "away_cover_margin": -2.03,
+   "avg_fill": 1.015,
+   "avg_attendance": 86722
+  },
+  "Baylor": {
+   "n_home": 27,
+   "home_cover_margin": -4.51,
+   "home_edge_shrunk": -1.12,
+   "home_ats": {
+    "w": 11,
+    "l": 15,
+    "n": 26,
+    "pct": 42.3,
+    "ci95": [
+     25.5,
+     61.1
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": 1.23,
+   "avg_fill": 0.943,
+   "avg_attendance": 42586
+  },
+  "NC State": {
+   "n_home": 28,
+   "home_cover_margin": 0.91,
+   "home_edge_shrunk": 0.23,
+   "home_ats": {
+    "w": 14,
+    "l": 13,
+    "n": 27,
+    "pct": 51.9,
+    "ci95": [
+     34.0,
+     69.3
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": -2.84,
+   "avg_fill": 0.98,
+   "avg_attendance": 56817
+  },
+  "SMU": {
+   "n_home": 24,
+   "home_cover_margin": 5.91,
+   "home_edge_shrunk": 1.34,
+   "home_ats": {
+    "w": 14,
+    "l": 10,
+    "n": 24,
+    "pct": 58.3,
+    "ci95": [
+     38.8,
+     75.5
+    ]
+   },
+   "n_away": 25,
+   "away_cover_margin": 0.12,
+   "avg_fill": 0.896,
+   "avg_attendance": 28675
+  },
+  "Ohio State": {
+   "n_home": 30,
+   "home_cover_margin": 3.17,
+   "home_edge_shrunk": 0.85,
+   "home_ats": {
+    "w": 20,
+    "l": 9,
+    "n": 29,
+    "pct": 69.0,
+    "ci95": [
+     50.8,
+     82.7
+    ]
+   },
+   "n_away": 18,
+   "away_cover_margin": -0.18,
+   "avg_fill": 1.015,
+   "avg_attendance": 104321
+  },
+  "North Carolina": {
+   "n_home": 26,
+   "home_cover_margin": -4.28,
+   "home_edge_shrunk": -1.03,
+   "home_ats": {
+    "w": 8,
+    "l": 17,
+    "n": 25,
+    "pct": 32.0,
+    "ci95": [
+     17.2,
+     51.6
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": -0.71,
+   "avg_fill": 0.967,
+   "avg_attendance": 48835
+  },
+  "Syracuse": {
+   "n_home": 26,
+   "home_cover_margin": -1.33,
+   "home_edge_shrunk": -0.32,
+   "home_ats": {
+    "w": 11,
+    "l": 14,
+    "n": 25,
+    "pct": 44.0,
+    "ci95": [
+     26.7,
+     62.9
+    ]
+   },
+   "n_away": 20,
+   "away_cover_margin": -1.95,
+   "avg_fill": 0.794,
+   "avg_attendance": 38944
+  },
+  "Coastal Carolina": {
+   "n_home": 25,
+   "home_cover_margin": -3.6,
+   "home_edge_shrunk": -0.84,
+   "home_ats": {
+    "w": 12,
+    "l": 12,
+    "n": 24,
+    "pct": 50.0,
+    "ci95": [
+     31.4,
+     68.6
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": -2.19,
+   "avg_fill": 0.84,
+   "avg_attendance": 17631
+  },
+  "Army": {
+   "n_home": 23,
+   "home_cover_margin": 0.23,
+   "home_edge_shrunk": 0.05,
+   "home_ats": {
+    "w": 8,
+    "l": 15,
+    "n": 23,
+    "pct": 34.8,
+    "ci95": [
+     18.8,
+     55.1
+    ]
+   },
+   "n_away": 18,
+   "away_cover_margin": 3.76,
+   "avg_fill": 0.724,
+   "avg_attendance": 27513
+  },
+  "Wake Forest": {
+   "n_home": 26,
+   "home_cover_margin": -0.96,
+   "home_edge_shrunk": -0.23,
+   "home_ats": {
+    "w": 12,
+    "l": 13,
+    "n": 25,
+    "pct": 48.0,
+    "ci95": [
+     30.0,
+     66.5
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": -1.39,
+   "avg_fill": 0.95,
+   "avg_attendance": 29927
+  },
+  "Troy": {
+   "n_home": 26,
+   "home_cover_margin": 0.62,
+   "home_edge_shrunk": 0.15,
+   "home_ats": {
+    "w": 13,
+    "l": 12,
+    "n": 25,
+    "pct": 52.0,
+    "ci95": [
+     33.5,
+     70.0
+    ]
+   },
+   "n_away": 25,
+   "away_cover_margin": 6.43,
+   "avg_fill": 0.832,
+   "avg_attendance": 24948
+  },
+  "Massachusetts": {
+   "n_home": 23,
+   "home_cover_margin": -8.14,
+   "home_edge_shrunk": -1.79,
+   "home_ats": {
+    "w": 7,
+    "l": 16,
+    "n": 23,
+    "pct": 30.4,
+    "ci95": [
+     15.6,
+     50.9
+    ]
+   },
+   "n_away": 25,
+   "away_cover_margin": -2.11,
+   "avg_fill": 0.624,
+   "avg_attendance": 10606
+  },
+  "Utah State": {
+   "n_home": 23,
+   "home_cover_margin": 5.76,
+   "home_edge_shrunk": 1.27,
+   "home_ats": {
+    "w": 17,
+    "l": 6,
+    "n": 23,
+    "pct": 73.9,
+    "ci95": [
+     53.5,
+     87.5
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": -3.58,
+   "avg_fill": 0.705,
+   "avg_attendance": 17998
+  },
+  "UConn": {
+   "n_home": 25,
+   "home_cover_margin": 7.64,
+   "home_edge_shrunk": 1.79,
+   "home_ats": {
+    "w": 17,
+    "l": 7,
+    "n": 24,
+    "pct": 70.8,
+    "ci95": [
+     50.8,
+     85.1
+    ]
+   },
+   "n_away": 23,
+   "away_cover_margin": -0.68,
+   "avg_fill": 0.641,
+   "avg_attendance": 25632
+  },
+  "Michigan": {
+   "n_home": 29,
+   "home_cover_margin": -0.34,
+   "home_edge_shrunk": -0.09,
+   "home_ats": {
+    "w": 11,
+    "l": 17,
+    "n": 28,
+    "pct": 39.3,
+    "ci95": [
+     23.6,
+     57.6
+    ]
+   },
+   "n_away": 18,
+   "away_cover_margin": 5.17,
+   "avg_fill": 1.026,
+   "avg_attendance": 110386
+  },
+  "Ball State": {
+   "n_home": 22,
+   "home_cover_margin": 3.24,
+   "home_edge_shrunk": 0.69,
+   "home_ats": {
+    "w": 15,
+    "l": 7,
+    "n": 22,
+    "pct": 68.2,
+    "ci95": [
+     47.3,
+     83.6
+    ]
+   },
+   "n_away": 26,
+   "away_cover_margin": -3.23,
+   "avg_fill": 0.462,
+   "avg_attendance": 10386
+  },
+  "Southern Miss": {
+   "n_home": 25,
+   "home_cover_margin": -1.09,
+   "home_edge_shrunk": -0.26,
+   "home_ats": {
+    "w": 13,
+    "l": 12,
+    "n": 25,
+    "pct": 52.0,
+    "ci95": [
+     33.5,
+     70.0
+    ]
+   },
+   "n_away": 23,
+   "away_cover_margin": -5.49,
+   "avg_fill": 0.69,
+   "avg_attendance": 24822
+  },
+  "Liberty": {
+   "n_home": 26,
+   "home_cover_margin": -3.79,
+   "home_edge_shrunk": -0.92,
+   "home_ats": {
+    "w": 10,
+    "l": 16,
+    "n": 26,
+    "pct": 38.5,
+    "ci95": [
+     22.4,
+     57.5
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": -0.59,
+   "avg_fill": 0.782,
+   "avg_attendance": 19546
+  },
+  "Old Dominion": {
+   "n_home": 23,
+   "home_cover_margin": 2.65,
+   "home_edge_shrunk": 0.58,
+   "home_ats": {
+    "w": 9,
+    "l": 14,
+    "n": 23,
+    "pct": 39.1,
+    "ci95": [
+     22.2,
+     59.2
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": 3.77,
+   "avg_fill": 0.958,
+   "avg_attendance": 19273
+  },
+  "Illinois": {
+   "n_home": 28,
+   "home_cover_margin": 1.64,
+   "home_edge_shrunk": 0.42,
+   "home_ats": {
+    "w": 13,
+    "l": 13,
+    "n": 26,
+    "pct": 50.0,
+    "ci95": [
+     32.1,
+     67.9
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": 1.95,
+   "avg_fill": 0.847,
+   "avg_attendance": 51389
+  },
+  "Indiana": {
+   "n_home": 28,
+   "home_cover_margin": 6.52,
+   "home_edge_shrunk": 1.67,
+   "home_ats": {
+    "w": 16,
+    "l": 12,
+    "n": 28,
+    "pct": 57.1,
+    "ci95": [
+     39.1,
+     73.5
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": 4.89,
+   "avg_fill": 0.913,
+   "avg_attendance": 48057
+  },
+  "Purdue": {
+   "n_home": 26,
+   "home_cover_margin": -5.28,
+   "home_edge_shrunk": -1.28,
+   "home_ats": {
+    "w": 7,
+    "l": 19,
+    "n": 26,
+    "pct": 26.9,
+    "ci95": [
+     13.7,
+     46.1
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": -3.3,
+   "avg_fill": 1.012,
+   "avg_attendance": 57944
+  },
+  "Maryland": {
+   "n_home": 28,
+   "home_cover_margin": -2.19,
+   "home_edge_shrunk": -0.56,
+   "home_ats": {
+    "w": 12,
+    "l": 16,
+    "n": 28,
+    "pct": 42.9,
+    "ci95": [
+     26.5,
+     60.9
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": -0.58,
+   "avg_fill": 0.719,
+   "avg_attendance": 37263
+  },
+  "Boston College": {
+   "n_home": 27,
+   "home_cover_margin": -0.22,
+   "home_edge_shrunk": -0.06,
+   "home_ats": {
+    "w": 12,
+    "l": 15,
+    "n": 27,
+    "pct": 44.4,
+    "ci95": [
+     27.6,
+     62.7
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": -1.94,
+   "avg_fill": 0.862,
+   "avg_attendance": 38360
+  },
+  "Northwestern": {
+   "n_home": 17,
+   "home_cover_margin": 1.16,
+   "home_edge_shrunk": 0.2,
+   "home_ats": {
+    "w": 9,
+    "l": 8,
+    "n": 17,
+    "pct": 52.9,
+    "ci95": [
+     31.0,
+     73.8
+    ]
+   },
+   "n_away": 20,
+   "away_cover_margin": 1.49,
+   "avg_fill": 0.653,
+   "avg_attendance": 20866
+  },
+  "Michigan State": {
+   "n_home": 26,
+   "home_cover_margin": -6.7,
+   "home_edge_shrunk": -1.62,
+   "home_ats": {
+    "w": 8,
+    "l": 18,
+    "n": 26,
+    "pct": 30.8,
+    "ci95": [
+     16.5,
+     50.0
+    ]
+   },
+   "n_away": 20,
+   "away_cover_margin": 1.09,
+   "avg_fill": 0.912,
+   "avg_attendance": 68367
+  },
+  "Penn State": {
+   "n_home": 29,
+   "home_cover_margin": 1.4,
+   "home_edge_shrunk": 0.37,
+   "home_ats": {
+    "w": 15,
+    "l": 13,
+    "n": 28,
+    "pct": 53.6,
+    "ci95": [
+     35.8,
+     70.5
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": 3.68,
+   "avg_fill": 1.011,
+   "avg_attendance": 107753
+  },
+  "Rutgers": {
+   "n_home": 27,
+   "home_cover_margin": -1.35,
+   "home_edge_shrunk": -0.34,
+   "home_ats": {
+    "w": 14,
+    "l": 12,
+    "n": 26,
+    "pct": 53.8,
+    "ci95": [
+     35.5,
+     71.2
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": -1.13,
+   "avg_fill": 0.938,
+   "avg_attendance": 49226
+  },
+  "Temple": {
+   "n_home": 26,
+   "home_cover_margin": 1.75,
+   "home_edge_shrunk": 0.42,
+   "home_ats": {
+    "w": 16,
+    "l": 10,
+    "n": 26,
+    "pct": 61.5,
+    "ci95": [
+     42.5,
+     77.6
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": -4.48,
+   "avg_fill": 0.223,
+   "avg_attendance": 15602
+  },
+  "Cincinnati": {
+   "n_home": 25,
+   "home_cover_margin": -2.47,
+   "home_edge_shrunk": -0.58,
+   "home_ats": {
+    "w": 8,
+    "l": 16,
+    "n": 24,
+    "pct": 33.3,
+    "ci95": [
+     18.0,
+     53.3
+    ]
+   },
+   "n_away": 20,
+   "away_cover_margin": -3.12,
+   "avg_fill": 0.931,
+   "avg_attendance": 37244
+  },
+  "New Mexico State": {
+   "n_home": 24,
+   "home_cover_margin": 5.02,
+   "home_edge_shrunk": 1.14,
+   "home_ats": {
+    "w": 15,
+    "l": 9,
+    "n": 24,
+    "pct": 62.5,
+    "ci95": [
+     42.7,
+     78.8
+    ]
+   },
+   "n_away": 25,
+   "away_cover_margin": 3.77,
+   "avg_fill": 0.433,
+   "avg_attendance": 12503
+  },
+  "Duke": {
+   "n_home": 25,
+   "home_cover_margin": 2.95,
+   "home_edge_shrunk": 0.69,
+   "home_ats": {
+    "w": 15,
+    "l": 10,
+    "n": 25,
+    "pct": 60.0,
+    "ci95": [
+     40.7,
+     76.6
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": 4.73,
+   "avg_fill": 0.63,
+   "avg_attendance": 25203
+  },
+  "App State": {
+   "n_home": 24,
+   "home_cover_margin": -1.8,
+   "home_edge_shrunk": -0.41,
+   "home_ats": {
+    "w": 10,
+    "l": 14,
+    "n": 24,
+    "pct": 41.7,
+    "ci95": [
+     24.5,
+     61.2
+    ]
+   },
+   "n_away": 23,
+   "away_cover_margin": -5.45,
+   "avg_fill": 1.102,
+   "avg_attendance": 33640
+  },
+  "East Carolina": {
+   "n_home": 25,
+   "home_cover_margin": 2.02,
+   "home_edge_shrunk": 0.47,
+   "home_ats": {
+    "w": 13,
+    "l": 12,
+    "n": 25,
+    "pct": 52.0,
+    "ci95": [
+     33.5,
+     70.0
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": 1.52,
+   "avg_fill": 0.762,
+   "avg_attendance": 38081
+  },
+  "Miami": {
+   "n_home": 28,
+   "home_cover_margin": -3.29,
+   "home_edge_shrunk": -0.84,
+   "home_ats": {
+    "w": 13,
+    "l": 15,
+    "n": 28,
+    "pct": 46.4,
+    "ci95": [
+     29.5,
+     64.2
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": 1.76,
+   "avg_fill": 0.88,
+   "avg_attendance": 56972
+  },
+  "Virginia": {
+   "n_home": 24,
+   "home_cover_margin": -4.16,
+   "home_edge_shrunk": -0.94,
+   "home_ats": {
+    "w": 13,
+    "l": 11,
+    "n": 24,
+    "pct": 54.2,
+    "ci95": [
+     35.1,
+     72.1
+    ]
+   },
+   "n_away": 20,
+   "away_cover_margin": 3.35,
+   "avg_fill": 0.705,
+   "avg_attendance": 43352
+  },
+  "Georgia State": {
+   "n_home": 24,
+   "home_cover_margin": -7.23,
+   "home_edge_shrunk": -1.64,
+   "home_ats": {
+    "w": 6,
+    "l": 17,
+    "n": 23,
+    "pct": 26.1,
+    "ci95": [
+     12.5,
+     46.5
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": 0.24,
+   "avg_fill": 0.615,
+   "avg_attendance": 15370
+  },
+  "Virginia Tech": {
+   "n_home": 24,
+   "home_cover_margin": -1.18,
+   "home_edge_shrunk": -0.27,
+   "home_ats": {
+    "w": 11,
+    "l": 13,
+    "n": 24,
+    "pct": 45.8,
+    "ci95": [
+     27.9,
+     64.9
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": 0.03,
+   "avg_fill": 0.967,
+   "avg_attendance": 63483
+  },
+  "Louisville": {
+   "n_home": 27,
+   "home_cover_margin": 6.51,
+   "home_edge_shrunk": 1.62,
+   "home_ats": {
+    "w": 15,
+    "l": 12,
+    "n": 27,
+    "pct": 55.6,
+    "ci95": [
+     37.3,
+     72.4
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": -2.21,
+   "avg_fill": 0.813,
+   "avg_attendance": 48757
+  },
+  "Western Michigan": {
+   "n_home": 22,
+   "home_cover_margin": 2.42,
+   "home_edge_shrunk": 0.51,
+   "home_ats": {
+    "w": 13,
+    "l": 9,
+    "n": 22,
+    "pct": 59.1,
+    "ci95": [
+     38.7,
+     76.7
+    ]
+   },
+   "n_away": 26,
+   "away_cover_margin": -0.62,
+   "avg_fill": 0.612,
+   "avg_attendance": 18480
+  },
+  "UCF": {
+   "n_home": 27,
+   "home_cover_margin": 2.51,
+   "home_edge_shrunk": 0.62,
+   "home_ats": {
+    "w": 13,
+    "l": 14,
+    "n": 27,
+    "pct": 48.1,
+    "ci95": [
+     30.7,
+     66.0
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": -4.86,
+   "avg_fill": 0.971,
+   "avg_attendance": 42917
+  },
+  "Tulsa": {
+   "n_home": 24,
+   "home_cover_margin": -5.12,
+   "home_edge_shrunk": -1.16,
+   "home_ats": {
+    "w": 7,
+    "l": 16,
+    "n": 23,
+    "pct": 30.4,
+    "ci95": [
+     15.6,
+     50.9
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": -4.47,
+   "avg_fill": 0.623,
+   "avg_attendance": 18690
+  },
+  "UNLV": {
+   "n_home": 25,
+   "home_cover_margin": 2.95,
+   "home_edge_shrunk": 0.69,
+   "home_ats": {
+    "w": 12,
+    "l": 13,
+    "n": 25,
+    "pct": 48.0,
+    "ci95": [
+     30.0,
+     66.5
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": 3.61,
+   "avg_fill": 0.424,
+   "avg_attendance": 27554
+  },
+  "Tulane": {
+   "n_home": 29,
+   "home_cover_margin": 2.47,
+   "home_edge_shrunk": 0.65,
+   "home_ats": {
+    "w": 15,
+    "l": 13,
+    "n": 28,
+    "pct": 53.6,
+    "ci95": [
+     35.8,
+     70.5
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": 2.01,
+   "avg_fill": 0.798,
+   "avg_attendance": 23935
+  },
+  "Toledo": {
+   "n_home": 24,
+   "home_cover_margin": 4.72,
+   "home_edge_shrunk": 1.07,
+   "home_ats": {
+    "w": 14,
+    "l": 10,
+    "n": 24,
+    "pct": 58.3,
+    "ci95": [
+     38.8,
+     75.5
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": -4.0,
+   "avg_fill": 0.787,
+   "avg_attendance": 20487
+  },
+  "Eastern Michigan": {
+   "n_home": 25,
+   "home_cover_margin": -4.97,
+   "home_edge_shrunk": -1.17,
+   "home_ats": {
+    "w": 12,
+    "l": 12,
+    "n": 24,
+    "pct": 50.0,
+    "ci95": [
+     31.4,
+     68.6
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": 3.05,
+   "avg_fill": 0.529,
+   "avg_attendance": 15813
+  },
+  "Arkansas State": {
+   "n_home": 23,
+   "home_cover_margin": 3.72,
+   "home_edge_shrunk": 0.82,
+   "home_ats": {
+    "w": 12,
+    "l": 10,
+    "n": 22,
+    "pct": 54.5,
+    "ci95": [
+     34.7,
+     73.1
+    ]
+   },
+   "n_away": 23,
+   "away_cover_margin": -1.84,
+   "avg_fill": 0.543,
+   "avg_attendance": 16495
+  },
+  "Marshall": {
+   "n_home": 24,
+   "home_cover_margin": 1.3,
+   "home_edge_shrunk": 0.3,
+   "home_ats": {
+    "w": 14,
+    "l": 10,
+    "n": 24,
+    "pct": 58.3,
+    "ci95": [
+     38.8,
+     75.5
+    ]
+   },
+   "n_away": 25,
+   "away_cover_margin": 0.73,
+   "avg_fill": 0.614,
+   "avg_attendance": 23340
+  },
+  "Bowling Green": {
+   "n_home": 23,
+   "home_cover_margin": -3.65,
+   "home_edge_shrunk": -0.8,
+   "home_ats": {
+    "w": 9,
+    "l": 14,
+    "n": 23,
+    "pct": 39.1,
+    "ci95": [
+     22.2,
+     59.2
+    ]
+   },
+   "n_away": 25,
+   "away_cover_margin": 6.49,
+   "avg_fill": 0.582,
+   "avg_attendance": 13977
+  },
+  "Wyoming": {
+   "n_home": 25,
+   "home_cover_margin": 3.66,
+   "home_edge_shrunk": 0.86,
+   "home_ats": {
+    "w": 13,
+    "l": 10,
+    "n": 23,
+    "pct": 56.5,
+    "ci95": [
+     36.8,
+     74.4
+    ]
+   },
+   "n_away": 23,
+   "away_cover_margin": -3.79,
+   "avg_fill": 0.757,
+   "avg_attendance": 22104
+  },
+  "New Mexico": {
+   "n_home": 23,
+   "home_cover_margin": 0.39,
+   "home_edge_shrunk": 0.09,
+   "home_ats": {
+    "w": 11,
+    "l": 11,
+    "n": 22,
+    "pct": 50.0,
+    "ci95": [
+     30.7,
+     69.3
+    ]
+   },
+   "n_away": 25,
+   "away_cover_margin": 2.03,
+   "avg_fill": 0.462,
+   "avg_attendance": 18139
+  },
+  "Nevada": {
+   "n_home": 25,
+   "home_cover_margin": -2.14,
+   "home_edge_shrunk": -0.5,
+   "home_ats": {
+    "w": 7,
+    "l": 16,
+    "n": 23,
+    "pct": 30.4,
+    "ci95": [
+     15.6,
+     50.9
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": 0.76,
+   "avg_fill": 0.62,
+   "avg_attendance": 17878
+  },
+  "San Jos\u00e9 State": {
+   "n_home": 25,
+   "home_cover_margin": -0.72,
+   "home_edge_shrunk": -0.17,
+   "home_ats": {
+    "w": 10,
+    "l": 15,
+    "n": 25,
+    "pct": 40.0,
+    "ci95": [
+     23.4,
+     59.3
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": 0.2,
+   "avg_fill": 0.52,
+   "avg_attendance": 15830
+  },
+  "Boise State": {
+   "n_home": 27,
+   "home_cover_margin": 2.86,
+   "home_edge_shrunk": 0.71,
+   "home_ats": {
+    "w": 19,
+    "l": 7,
+    "n": 26,
+    "pct": 73.1,
+    "ci95": [
+     53.9,
+     86.3
+    ]
+   },
+   "n_away": 25,
+   "away_cover_margin": -2.38,
+   "avg_fill": 0.949,
+   "avg_attendance": 34518
+  },
+  "Colorado State": {
+   "n_home": 25,
+   "home_cover_margin": -4.79,
+   "home_edge_shrunk": -1.12,
+   "home_ats": {
+    "w": 10,
+    "l": 15,
+    "n": 25,
+    "pct": 40.0,
+    "ci95": [
+     23.4,
+     59.3
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": -2.18,
+   "avg_fill": 0.819,
+   "avg_attendance": 29894
+  },
+  "Navy": {
+   "n_home": 22,
+   "home_cover_margin": -0.98,
+   "home_edge_shrunk": -0.21,
+   "home_ats": {
+    "w": 8,
+    "l": 13,
+    "n": 21,
+    "pct": 38.1,
+    "ci95": [
+     20.8,
+     59.1
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": 3.92,
+   "avg_fill": 0.93,
+   "avg_attendance": 31605
+  },
+  "South Florida": {
+   "n_home": 21,
+   "home_cover_margin": 2.82,
+   "home_edge_shrunk": 0.58,
+   "home_ats": {
+    "w": 10,
+    "l": 10,
+    "n": 20,
+    "pct": 50.0,
+    "ci95": [
+     29.9,
+     70.1
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": 1.71,
+   "avg_fill": 0.522,
+   "avg_attendance": 34345
+  },
+  "Memphis": {
+   "n_home": 26,
+   "home_cover_margin": 0.52,
+   "home_edge_shrunk": 0.13,
+   "home_ats": {
+    "w": 11,
+    "l": 14,
+    "n": 25,
+    "pct": 44.0,
+    "ci95": [
+     26.7,
+     62.9
+    ]
+   },
+   "n_away": 21,
+   "away_cover_margin": 4.02,
+   "avg_fill": 0.468,
+   "avg_attendance": 27276
+  },
+  "Buffalo": {
+   "n_home": 24,
+   "home_cover_margin": -1.98,
+   "home_edge_shrunk": -0.45,
+   "home_ats": {
+    "w": 9,
+    "l": 14,
+    "n": 23,
+    "pct": 39.1,
+    "ci95": [
+     22.2,
+     59.2
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": 0.86,
+   "avg_fill": 0.466,
+   "avg_attendance": 14104
+  },
+  "Central Michigan": {
+   "n_home": 22,
+   "home_cover_margin": 0.02,
+   "home_edge_shrunk": 0.0,
+   "home_ats": {
+    "w": 10,
+    "l": 11,
+    "n": 21,
+    "pct": 47.6,
+    "ci95": [
+     28.3,
+     67.6
+    ]
+   },
+   "n_away": 25,
+   "away_cover_margin": -2.89,
+   "avg_fill": 0.548,
+   "avg_attendance": 16572
+  },
+  "Louisiana": {
+   "n_home": 24,
+   "home_cover_margin": 0.88,
+   "home_edge_shrunk": 0.2,
+   "home_ats": {
+    "w": 12,
+    "l": 11,
+    "n": 23,
+    "pct": 52.2,
+    "ci95": [
+     33.0,
+     70.8
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": 1.06,
+   "avg_fill": 0.414,
+   "avg_attendance": 17158
+  },
+  "Miami (OH)": {
+   "n_home": 22,
+   "home_cover_margin": 1.14,
+   "home_edge_shrunk": 0.24,
+   "home_ats": {
+    "w": 12,
+    "l": 10,
+    "n": 22,
+    "pct": 54.5,
+    "ci95": [
+     34.7,
+     73.1
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": 3.51,
+   "avg_fill": 0.534,
+   "avg_attendance": 12973
+  },
+  "Kent State": {
+   "n_home": 20,
+   "home_cover_margin": -2.46,
+   "home_edge_shrunk": -0.48,
+   "home_ats": {
+    "w": 7,
+    "l": 13,
+    "n": 20,
+    "pct": 35.0,
+    "ci95": [
+     18.1,
+     56.7
+    ]
+   },
+   "n_away": 28,
+   "away_cover_margin": -1.61,
+   "avg_fill": 0.417,
+   "avg_attendance": 10553
+  },
+  "Georgia Southern": {
+   "n_home": 24,
+   "home_cover_margin": 2.51,
+   "home_edge_shrunk": 0.57,
+   "home_ats": {
+    "w": 15,
+    "l": 7,
+    "n": 22,
+    "pct": 68.2,
+    "ci95": [
+     47.3,
+     83.6
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": -1.38,
+   "avg_fill": 0.849,
+   "avg_attendance": 21231
+  },
+  "Ohio": {
+   "n_home": 24,
+   "home_cover_margin": 3.79,
+   "home_edge_shrunk": 0.86,
+   "home_ats": {
+    "w": 17,
+    "l": 7,
+    "n": 24,
+    "pct": 70.8,
+    "ci95": [
+     50.8,
+     85.1
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": 1.62,
+   "avg_fill": 0.785,
+   "avg_attendance": 18836
+  },
+  "Akron": {
+   "n_home": 20,
+   "home_cover_margin": 0.44,
+   "home_edge_shrunk": 0.09,
+   "home_ats": {
+    "w": 11,
+    "l": 9,
+    "n": 20,
+    "pct": 55.0,
+    "ci95": [
+     34.2,
+     74.2
+    ]
+   },
+   "n_away": 27,
+   "away_cover_margin": -0.83,
+   "avg_fill": 0.269,
+   "avg_attendance": 8084
+  },
+  "Texas State": {
+   "n_home": 24,
+   "home_cover_margin": 2.8,
+   "home_edge_shrunk": 0.64,
+   "home_ats": {
+    "w": 11,
+    "l": 13,
+    "n": 24,
+    "pct": 45.8,
+    "ci95": [
+     27.9,
+     64.9
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": -0.8,
+   "avg_fill": 0.701,
+   "avg_attendance": 21034
+  },
+  "James Madison": {
+   "n_home": 25,
+   "home_cover_margin": 5.09,
+   "home_edge_shrunk": 1.19,
+   "home_ats": {
+    "w": 14,
+    "l": 11,
+    "n": 25,
+    "pct": 56.0,
+    "ci95": [
+     37.1,
+     73.3
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": 4.77,
+   "avg_fill": 0.981,
+   "avg_attendance": 24416
+  },
+  "South Alabama": {
+   "n_home": 24,
+   "home_cover_margin": -0.17,
+   "home_edge_shrunk": -0.04,
+   "home_ats": {
+    "w": 10,
+    "l": 14,
+    "n": 24,
+    "pct": 41.7,
+    "ci95": [
+     24.5,
+     61.2
+    ]
+   },
+   "n_away": 25,
+   "away_cover_margin": 5.08,
+   "avg_fill": 0.668,
+   "avg_attendance": 17009
+  },
+  "UL Monroe": {
+   "n_home": 22,
+   "home_cover_margin": 0.99,
+   "home_edge_shrunk": 0.21,
+   "home_ats": {
+    "w": 10,
+    "l": 12,
+    "n": 22,
+    "pct": 45.5,
+    "ci95": [
+     26.9,
+     65.3
+    ]
+   },
+   "n_away": 26,
+   "away_cover_margin": -4.66,
+   "avg_fill": 0.551,
+   "avg_attendance": 15224
+  },
+  "Florida Atlantic": {
+   "n_home": 24,
+   "home_cover_margin": -2.31,
+   "home_edge_shrunk": -0.53,
+   "home_ats": {
+    "w": 10,
+    "l": 13,
+    "n": 23,
+    "pct": 43.5,
+    "ci95": [
+     25.6,
+     63.2
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": -0.08,
+   "avg_fill": 0.65,
+   "avg_attendance": 19134
+  },
+  "UTEP": {
+   "n_home": 23,
+   "home_cover_margin": -2.38,
+   "home_edge_shrunk": -0.52,
+   "home_ats": {
+    "w": 9,
+    "l": 14,
+    "n": 23,
+    "pct": 39.1,
+    "ci95": [
+     22.2,
+     59.2
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": -2.27,
+   "avg_fill": 0.351,
+   "avg_attendance": 18070
+  },
+  "Western Kentucky": {
+   "n_home": 24,
+   "home_cover_margin": 0.06,
+   "home_edge_shrunk": 0.01,
+   "home_ats": {
+    "w": 14,
+    "l": 10,
+    "n": 24,
+    "pct": 58.3,
+    "ci95": [
+     38.8,
+     75.5
+    ]
+   },
+   "n_away": 26,
+   "away_cover_margin": -0.5,
+   "avg_fill": 0.675,
+   "avg_attendance": 14937
+  },
+  "Florida International": {
+   "n_home": 18,
+   "home_cover_margin": -4.35,
+   "home_edge_shrunk": -0.79,
+   "home_ats": {
+    "w": 8,
+    "l": 10,
+    "n": 18,
+    "pct": 44.4,
+    "ci95": [
+     24.6,
+     66.3
+    ]
+   },
+   "n_away": 23,
+   "away_cover_margin": -1.12,
+   "avg_fill": 0.721,
+   "avg_attendance": 14419
+  },
+  "UAB": {
+   "n_home": 24,
+   "home_cover_margin": 1.71,
+   "home_edge_shrunk": 0.39,
+   "home_ats": {
+    "w": 12,
+    "l": 12,
+    "n": 24,
+    "pct": 50.0,
+    "ci95": [
+     31.4,
+     68.6
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": -5.61,
+   "avg_fill": 0.464,
+   "avg_attendance": 20867
+  },
+  "Charlotte": {
+   "n_home": 24,
+   "home_cover_margin": -9.89,
+   "home_edge_shrunk": -2.25,
+   "home_ats": {
+    "w": 5,
+    "l": 19,
+    "n": 24,
+    "pct": 20.8,
+    "ci95": [
+     9.2,
+     40.5
+    ]
+   },
+   "n_away": 23,
+   "away_cover_margin": 3.45,
+   "avg_fill": 0.804,
+   "avg_attendance": 12598
+  },
+  "North Texas": {
+   "n_home": 25,
+   "home_cover_margin": 4.2,
+   "home_edge_shrunk": 0.99,
+   "home_ats": {
+    "w": 14,
+    "l": 11,
+    "n": 25,
+    "pct": 56.0,
+    "ci95": [
+     37.1,
+     73.3
+    ]
+   },
+   "n_away": 25,
+   "away_cover_margin": -0.28,
+   "avg_fill": 0.688,
+   "avg_attendance": 21212
+  },
+  "UTSA": {
+   "n_home": 26,
+   "home_cover_margin": 5.98,
+   "home_edge_shrunk": 1.45,
+   "home_ats": {
+    "w": 16,
+    "l": 10,
+    "n": 26,
+    "pct": 61.5,
+    "ci95": [
+     42.5,
+     77.6
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": -4.75,
+   "avg_fill": 0.646,
+   "avg_attendance": 25245
+  },
+  "Louisiana Tech": {
+   "n_home": 22,
+   "home_cover_margin": 6.19,
+   "home_edge_shrunk": 1.32,
+   "home_ats": {
+    "w": 14,
+    "l": 8,
+    "n": 22,
+    "pct": 63.6,
+    "ci95": [
+     43.0,
+     80.3
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": -3.77,
+   "avg_fill": 0.541,
+   "avg_attendance": 17213
+  },
+  "Rice": {
+   "n_home": 26,
+   "home_cover_margin": 1.59,
+   "home_edge_shrunk": 0.38,
+   "home_ats": {
+    "w": 15,
+    "l": 11,
+    "n": 26,
+    "pct": 57.7,
+    "ci95": [
+     38.9,
+     74.5
+    ]
+   },
+   "n_away": 22,
+   "away_cover_margin": -3.33,
+   "avg_fill": 0.436,
+   "avg_attendance": 20477
+  },
+  "Middle Tennessee": {
+   "n_home": 22,
+   "home_cover_margin": -4.84,
+   "home_edge_shrunk": -1.03,
+   "home_ats": {
+    "w": 8,
+    "l": 13,
+    "n": 21,
+    "pct": 38.1,
+    "ci95": [
+     20.8,
+     59.1
+    ]
+   },
+   "n_away": 24,
+   "away_cover_margin": 0.02,
+   "avg_fill": 0.422,
+   "avg_attendance": 12995
+  },
+  "Jacksonville State": {
+   "n_home": 19,
+   "home_cover_margin": 9.11,
+   "home_edge_shrunk": 1.72,
+   "home_ats": {
+    "w": 14,
+    "l": 5,
+    "n": 19,
+    "pct": 73.7,
+    "ci95": [
+     51.2,
+     88.2
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": 1.14,
+   "avg_fill": 0.797,
+   "avg_attendance": 19118
+  },
+  "Sam Houston": {
+   "n_home": 10,
+   "home_cover_margin": -2.55,
+   "home_edge_shrunk": -0.28,
+   "home_ats": {
+    "w": 4,
+    "l": 6,
+    "n": 10,
+    "pct": 40.0,
+    "ci95": [
+     16.8,
+     68.7
+    ]
+   },
+   "n_away": 19,
+   "away_cover_margin": -1.62,
+   "avg_fill": 0.661,
+   "avg_attendance": 9257
+  },
+  "Kennesaw State": {
+   "n_home": 12,
+   "home_cover_margin": 4.77,
+   "home_edge_shrunk": 0.61,
+   "home_ats": {
+    "w": 8,
+    "l": 4,
+    "n": 12,
+    "pct": 66.7,
+    "ci95": [
+     39.1,
+     86.2
+    ]
+   },
+   "n_away": 14,
+   "away_cover_margin": 0.5,
+   "avg_fill": 0.887,
+   "avg_attendance": 9789
+  },
+  "Missouri State": {
+   "n_home": 6,
+   "home_cover_margin": 3.92,
+   "home_edge_shrunk": 0.27,
+   "home_ats": {
+    "w": 4,
+    "l": 2,
+    "n": 6,
+    "pct": 66.7,
+    "ci95": [
+     30.0,
+     90.3
+    ]
+   },
+   "n_away": 9,
+   "away_cover_margin": 1.14,
+   "avg_fill": 0.666,
+   "avg_attendance": 11546
+  },
+  "Delaware": {
+   "n_home": 6,
+   "home_cover_margin": 3.33,
+   "home_edge_shrunk": 0.23,
+   "home_ats": {
+    "w": 3,
+    "l": 3,
+    "n": 6,
+    "pct": 50.0,
+    "ci95": [
+     18.8,
+     81.2
+    ]
+   },
+   "n_away": 7,
+   "away_cover_margin": -4.11,
+   "avg_fill": 0.761,
+   "avg_attendance": 16751
+  }
+ },
+ "fill_buckets": {
+  "<60%": {
+   "n": 744,
+   "home_cover_margin": -0.15,
+   "home_ats": {
+    "w": 344,
+    "l": 389,
+    "n": 733,
+    "pct": 46.9,
+    "ci95": [
+     43.3,
+     50.5
+    ]
+   }
+  },
+  "60-80%": {
+   "n": 698,
+   "home_cover_margin": 0.03,
+   "home_ats": {
+    "w": 346,
+    "l": 338,
+    "n": 684,
+    "pct": 50.6,
+    "ci95": [
+     46.8,
+     54.3
+    ]
+   }
+  },
+  "80-95%": {
+   "n": 700,
+   "home_cover_margin": 0.94,
+   "home_ats": {
+    "w": 346,
+    "l": 347,
+    "n": 693,
+    "pct": 49.9,
+    "ci95": [
+     46.2,
+     53.6
+    ]
+   }
+  },
+  "95%+": {
+   "n": 1153,
+   "home_cover_margin": 0.56,
+   "home_ats": {
+    "w": 589,
+    "l": 536,
+    "n": 1125,
+    "pct": 52.4,
+    "ci95": [
+     49.4,
+     55.3
+    ]
+   }
+  }
+ },
+ "crowd_regression": {
+  "n": 3295,
+  "r2": 0.0,
+  "coef": {
+   "const": {
+    "b": 0.3669,
+    "se": 0.2645,
+    "t": 1.39
+   },
+   "fill_vs_normal_per_10pts": {
+    "b": -0.0397,
+    "se": 0.24,
+    "t": -0.17
+   }
+  }
+ },
+ "raw_fill_regression": {
+  "n": 3295,
+  "r2": 0.0003,
+  "coef": {
+   "const": {
+    "b": -0.5613,
+    "se": 0.9592,
+    "t": -0.59
+   },
+   "raw_fill_per_10pts": {
+    "b": 0.1177,
+    "se": 0.1169,
+    "t": 1.01
+   }
+  }
+ },
+ "weather_attendance": {
+  "n": 450,
+  "r2": 0.0275,
+  "coef": {
+   "const": {
+    "b": -0.3825,
+    "se": 1.0152,
+    "t": -0.38
+   },
+   "wind_mph": {
+    "b": -0.0476,
+    "se": 0.1053,
+    "t": -0.45
+   },
+   "rain_in": {
+    "b": -3.32,
+    "se": 7.9186,
+    "t": -0.42
+   },
+   "snow_in": {
+    "b": -2.0474,
+    "se": 21.0422,
+    "t": -0.1
+   },
+   "cold": {
+    "b": -8.0744,
+    "se": 2.3985,
+    "t": -3.37
+   },
+   "heat": {
+    "b": -2.2751,
+    "se": 2.4682,
+    "t": -0.92
+   }
+  }
+ }
+}
