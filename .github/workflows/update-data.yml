@@ -25,7 +25,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
 
@@ -37,7 +37,8 @@ jobs:
       - run: pip install -r requirements.txt
 
       # The history warehouse and CFBD response cache live here between runs (saves API calls).
-      - uses: actions/cache@v4
+      - name: Restore cache
+        uses: actions/cache/restore@v4
         with:
           path: .cache
           key: site-cache-${{ github.run_id }}
@@ -46,7 +47,16 @@ jobs:
       - name: Build data
         env:
           CFBD_API_KEY: ${{ secrets.CFBD_KEY }}
+          PYTHONUNBUFFERED: "1"
         run: python build_site.py --weeks "${{ github.event.inputs.weeks }}"
+
+      # Saved even if the build fails or times out, so a long first download is never repeated.
+      - name: Save cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .cache
+          key: site-cache-${{ github.run_id }}
 
       - name: Commit data
         run: |

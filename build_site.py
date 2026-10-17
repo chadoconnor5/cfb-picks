@@ -146,8 +146,10 @@ def refresh_history(season, history_seasons):
     if not hconn.execute("SELECT 1 FROM bt_venues LIMIT 1").fetchone():
         collect.collect_venues(hconn)
     for s in sorted(set(history_seasons) | {season}):
+        t0 = time.time()
         try:
-            collect.collect_season(hconn, s)
+            n_games, _ = collect.collect_season(hconn, s)
+            print(f"  history {s}: {n_games} games ({time.time() - t0:.0f}s, {CALLS['live']} CFBD calls so far)", flush=True)
             warnings += [f"{s} {w}" for w in collect.collect_context(hconn, s)]
         except Exception as e:
             warnings.append(f"history {s}: {e}")
@@ -164,7 +166,9 @@ def maybe_analyze(force=False):
     try:
         hconn = collect.connect(history.DB_PATH)
         seasons = [r[0] for r in hconn.execute("SELECT DISTINCT season FROM bt_games")]
-        collect.collect_weather(hconn, [s for s in seasons if s < now_utc().year])
+        t0 = time.time()
+        n = collect.collect_weather(hconn, [s for s in seasons if s < now_utc().year])
+        print(f"  past-game weather: {n} games ({time.time() - t0:.0f}s)", flush=True)
         hconn.close()
         from backtest import analyze
         analyze.main(["--out", os.path.dirname(cal)])
