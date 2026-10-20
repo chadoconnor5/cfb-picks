@@ -113,7 +113,7 @@ def market_for(card, game):
     if past_deadline(card):
         line = ctx.get("line") or {"spread": game.get("spread_open"), "total": game.get("total_open"), "label": "opening line"}
         return {"home": game["home_team"], "spread": line.get("spread"), "total": line.get("total"),
-                "label": line.get("label") if ctx.get("replay") else "line as of the pool deadline"}
+                "label": line.get("label") if ctx.get("replay") or not ctx.get("line") else "line as of the pool deadline"}
     return {"home": game["home_team"], "spread": game.get("spread"), "total": game.get("total")}
 
 

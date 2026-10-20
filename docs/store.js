@@ -726,7 +726,7 @@
     if (pastDeadline(card)) {
       const line = ctx.line || { spread: game.spread_open, total: game.total_open, label: "opening line" };
       return { home: game.home_team, spread: line.spread, total: line.total,
-               label: ctx.replay ? line.label : "line as of the pool deadline" };
+               label: ctx.replay || !ctx.line ? line.label : "line as of the pool deadline" };
     }
     return { home: game.home_team, spread: game.spread, total: game.total };
   }
