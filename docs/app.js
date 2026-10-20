@@ -188,13 +188,15 @@ function gameItem(it, pick, first) {
 
 function propItem(it, pick) {
   const d = it.data, c = it.claude;
+  const options = d.choices ? d.choices.map((x) => [x, x]) : [["over", "Over"], ["under", "Under"]];
   return el("div", { class: "item" },
     el("div", { class: "item-head" }, el("span", { class: "item-title" }, `Question ${d.n}`),
-      it.prop_actual != null ? el("span", { class: "final small" }, `Result: ${it.prop_actual}`) : null),
+      it.prop_actual != null ? el("span", { class: "final small" }, `Result: ${it.prop_actual === "tie" ? "tie" : it.prop_actual}`) : null),
     el("div", { class: "q-text" }, d.question),
-    d.line == null ? el("div", { class: "warnlist small" }, "Over/under number missing: tap “Fix a spread or total” below.") : el("div", { class: "item-line" }, `Over/under ${d.line}`),
+    d.choices ? el("div", { class: "item-line" }, `${d.choices[0]} or ${d.choices[1]}`) :
+      d.line == null ? el("div", { class: "warnlist small" }, questionHint(it)) : el("div", { class: "item-line" }, `Over/under ${d.line}`),
     el("div", { class: "row" }, el("span", { class: "who" }, "Pick"),
-      seg([["over", "Over"], ["under", "Under"]], it.my_prop, (v) => pick(it, { pick: v }), it.locked && !S.fixPicks, it.prop_result),
+      seg(options, it.my_prop, (v) => pick(it, { pick: v }), it.locked && !S.fixPicks, it.prop_result),
       it.locked && !it.my_prop ? el("span", { class: "warnlist small" }, "no pick") : null),
     c ? el("div", { class: "row claude-row" }, el("span", { class: "who" }, "Claude"),
       el("span", {}, `${c.pick === "over" ? "Over" : "Under"} `, mark(it.claude_prop_result), el("span", { class: "muted small" }, ` · projects ${c.projection} · confidence ${c.confidence}`)),
@@ -221,12 +223,20 @@ async function saveLine(it, body) {
   catch (e) { toast(e.message, true); }
 }
 
+const questionHint = (it) => (it.locked ? "Question not read yet: paste the pool email at the bottom of the week." :
+  "Over/under number missing: tap “Fix a spread or total” below.");
+
 function actualEditor(it) {
+  const save = async (value) => {
+    try { await api(`/api/pool/items/${it.id}/actual`, { method: "POST", body: { value } }); render(); } catch (e) { toast(e.message, true); }
+  };
+  if (it.data.choices) {
+    return el("div", { class: "edit-line" }, el("span", { class: "muted" }, "Which was it?"),
+      [...it.data.choices, "tie"].map((x) => el("button", { onclick: () => save(x) }, x)));
+  }
   const inp = el("input", { type: "number", step: "0.5", placeholder: "real number", style: "width:120px" });
   return el("div", { class: "edit-line" }, el("span", { class: "muted" }, "Result not found automatically:"), inp,
-    el("button", { onclick: async () => {
-      try { await api(`/api/pool/items/${it.id}/actual`, { method: "POST", body: { value: inp.value } }); render(); } catch (e) { toast(e.message, true); }
-    } }, "Save"));
+    el("button", { onclick: () => save(inp.value) }, "Save"));
 }
 
 function importBox(root) {

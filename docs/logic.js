@@ -136,6 +136,8 @@
   const QUESTION_RE = /^\s*(?<n>\d+)[.)]\s*(?<text>.+)$/;
   const ANSWER_RE = /^\s*(OVER|UNDER|O|U)\s*$/i;
   const TRAIL_ANSWER_RE = /(?<=[?.)])\s*(OVER|UNDER|O|U)\s*$/i;   // "...turnovers? OVER" on one line
+  const SHORT_ANSWER_RE = /^(?!.*\?)\S+(?:\s+\S+){0,3}$/;   // "BROWNE", "MISS ST." under a "which ...?" question
+  const CHOICES_RE = /\(\s*([^()]+?)\s+or\s+([^()]+?)\s*\)\s*\??\s*$/i;   // "... passing yards? (Lopez or Browne)"
   const LINE_RE = /over\s+or\s+under\s+(?<line>\d+(?:\.\d+)?)\s*(?<unit>[a-z ]*)/i;
   const COMBINED_RE = /\b(both teams|the teams|two teams|teams (?:to )?combine|combined between|total between|between (?:the|both) (?:two )?teams)\b/;
   const TIEBREAK_RE = /combined\s+score\s*[-:]?\s*(?<n>\d+)?/i;
@@ -171,6 +173,7 @@
       if (tb && low.startsWith("combined")) {
         hasTiebreaker = true;
         tiebreaker = tb.groups.n ? parseInt(tb.groups.n, 10) : null;
+        if (tiebreaker === null && i + 1 < lines.length && /^\s*\d+\s*$/.test(lines[i + 1])) { tiebreaker = parseInt(lines[i + 1], 10); i++; }
         i++; continue;
       }
       const m = GAME_RE.exec(line);
@@ -197,14 +200,17 @@
       if (q && section === "props") {
         const parts = [q.groups.text.trim()];
         let j = i + 1;
+        let answer = null;
         while (j < lines.length && lines[j].trim() && !QUESTION_RE.test(lines[j]) && !ANSWER_RE.test(lines[j]) &&
                !startsWithAny(lines[j].trim().toLowerCase(), ["mid", "combined"])) {
+          if (/[?)]$/.test(parts[parts.length - 1]) && SHORT_ANSWER_RE.test(lines[j].trim())) { answer = lines[j].trim(); j++; break; }
           parts.push(lines[j].trim());
           j++;
         }
         let qtext = parts.join(" ");
-        let answer = null;
-        if (j < lines.length && ANSWER_RE.test(lines[j])) {
+        if (answer !== null) {
+          // a "which ...?" answer stays as written; interpretProp matches it to one of the choices
+        } else if (j < lines.length && ANSWER_RE.test(lines[j])) {
           answer = lines[j].trim().toUpperCase().startsWith("O") ? "over" : "under";
           j++;
         } else if (TRAIL_ANSWER_RE.test(qtext)) {
@@ -213,9 +219,11 @@
           qtext = qtext.slice(0, ta.index).replace(/\s+$/, "");
         }
         const lm = LINE_RE.exec(qtext);
+        const cm = CHOICES_RE.exec(qtext);
         props.push({ kind: "prop", n: parseInt(q.groups.n, 10), question: qtext,
                      line: lm ? parseFloat(lm.groups.line) : null,
-                     unit: lm ? (lm.groups.unit || "").trim() : "", my_pick: answer });
+                     unit: lm ? (lm.groups.unit || "").trim() : "", my_pick: answer,
+                     choices: !lm && cm ? [cm[1].trim(), cm[2].trim()] : null });
         i = j; continue;
       }
       i++;
@@ -258,7 +266,7 @@
     return cardGames;
   }
 
-  function interpretProp(prop, weekGames, ref) {
+  function interpretProp(prop, weekGames, ref, nick) {
     const low = prop.question.toLowerCase();
     let stat = null;
     for (const [s, words] of STAT_WORDS) if (words.some((w) => low.includes(w))) { stat = s; break; }
@@ -280,7 +288,32 @@
     const game = found.length ? found[0][2] : null;
     let opponent = null;
     if (game) opponent = team === game.home_team ? game.away_team : game.home_team;
-    return { ...prop, team, opponent, game_id: game ? game.id : null, stat, scope: combined ? "combined" : "team" };
+    let scope = combined ? "combined" : "team", choices = null, myPick = prop.my_pick;
+    // "Which team will have more rushing yards?" / "Which QB ...? (Lopez or Browne)": pick one of two, no line
+    if (prop.line == null && (prop.choices || /\b(which|who)\b/.test(low))) {
+      const pair = game ? [team, opponent] : null;
+      choices = prop.choices || pair;
+      if (prop.choices && pair) {
+        const m = prop.choices.map((c) => matchTeam(c, pair, ref));
+        if (m[0] && m[1] && m[0] !== m[1]) choices = m;
+      }
+      scope = choices && pair && stat && choices.every((c) => pair.includes(c)) ? "compare" : "choice";
+      if (choices && myPick && myPick !== "over" && myPick !== "under") myPick = choiceOf(myPick, choices, ref, nick);
+    }
+    return { ...prop, team, opponent, game_id: game ? game.id : null, stat, scope, choices, my_pick: myPick === undefined ? null : myPick };
+  }
+
+  // A written answer ("MINNESOTA", "Miss St.", "browne") -> one of the question's two choices
+  function choiceOf(text, choices, ref, nick) {
+    if (!text || !choices) return null;
+    const hit = whichTeam(text, choices, ref, nick);
+    if (hit) return hit;
+    const low = norm(text);
+    for (const c of choices) {
+      const n = norm(c);
+      if (low && (n === low || n.startsWith(low) || low.startsWith(n) || n.split(" ").pop() === low)) return c;
+    }
+    return null;
   }
 
   const _fmtSpread = (s) => (s === 0 ? "PK" : fmtSigned(s));
@@ -334,6 +367,12 @@
     const sideOf = (team) => (team === g.home_team ? "home" : team === g.away_team ? "away" : null);
     const mine = g.box[sideOf(prop.team)];
     if (!mine || mine[prop.stat] == null) return null;
+    if (prop.scope === "compare") {   // the answer is the team with more ("tie" if even)
+      const other = g.box[sideOf(prop.opponent)];
+      if (!other || other[prop.stat] == null) return null;
+      return mine[prop.stat] === other[prop.stat] ? "tie" : mine[prop.stat] > other[prop.stat] ? prop.team : prop.opponent;
+    }
+    if (prop.scope === "choice") return null;
     if (prop.scope === "combined") {
       const other = g.box[sideOf(prop.opponent)];
       if (!other || other[prop.stat] == null) return null;
@@ -343,6 +382,7 @@
   }
 
   function gradeProp(pick, line, actual) {
+    if (typeof actual === "string") return pick == null ? null : actual === "tie" ? "P" : pick === actual ? "W" : "L";
     if ((pick !== "over" && pick !== "under") || line == null || actual == null) return null;
     if (actual === line) return "P";
     return (actual > line) === (pick === "over") ? "W" : "L";
@@ -445,6 +485,7 @@
 
   function _propResult(item, pick) {
     const actual = item.prop_actual, line = item.data.line;
+    if (typeof actual === "string") return pick == null ? null : actual === "tie" ? "P" : pick === actual ? "W" : "L";
     if ((pick !== "over" && pick !== "under") || actual == null || line == null) return null;
     if (actual === line) return "P";
     return (actual > line) === (pick === "over") ? "W" : "L";
@@ -686,8 +727,9 @@
     const above = rows.slice(0, gi);
     const colText = (i) => above.map((r) => r[i] || "").join(" ");
     const games = [], props = [];
-    let midSeen = false;
+    let midSeen = false, tiebreakCol = null;
     head.forEach((c, i) => {
+      if (/combined\s+score/i.test(c)) { tiebreakCol = i; return; }
       const q = /^Q(\d+)$/i.exec(c);
       if (q) { props.push({ n: parseInt(q[1], 10), col: i }); return; }
       const m = GAME.exec(c);
@@ -707,7 +749,7 @@
       if (!name || r.slice(1).every((c) => !c)) continue;
       players.push({ name, cells: r });
     }
-    return { games, props, players };
+    return { games, props, players, tiebreak_col: tiebreakCol };
   }
 
   function pickLabel(item, pick) {
@@ -725,7 +767,7 @@
     const cols = items.map((it) => ({
       idx: it.idx, kind: it.kind, weight: it.data.weight === undefined ? 1 : it.data.weight,
       label: it.kind === "prop" ? `Q${it.data.n}` : `${it.data.away} @ ${it.data.home}`,
-      line: it.kind === "prop" ? (it.data.line != null ? `O/U ${pyStr(it.data.line, true)}` : "line not set") :
+      line: it.kind === "prop" ? (it.data.choices ? it.data.choices.join(" or ") : it.data.line != null ? `O/U ${pyStr(it.data.line, true)}` : "line not set") :
         `${it.data.home} ${fmtSigned(it.data.home_spread)}` + (it.data.total != null ? `, o/u ${fmtG(it.data.total)}` : ""),
     }));
     const rows = scored.rows.map((r) => {
@@ -1091,7 +1133,7 @@
 
   const api = {
     pyRound, fmtG, fmtSigned, gradeAts, gradeOu, formatSpread, norm, canonical, ratio, getCloseMatch,
-    parseCard, matchTeam, matchGames, interpretProp, exportText, gradeGameItem, propActual, gradeProp, whichTeam, parseEntry,
+    parseCard, matchTeam, matchGames, interpretProp, choiceOf, exportText, gradeGameItem, propActual, gradeProp, whichTeam, parseEntry,
     LINE_RE, DEFAULT_SCORING, merged, actualCombined, scoreEntry, tiebreakPoints, weekComplete, scoreWeek, leaderboard,
     candidateConfigs, describeRule, inferRules, DEFAULT_HIGHLIGHTS, normName, namesMatch, highlightFor, parseLeagueSheet, pickLabel, weekSheet, seasonSheet, toCsv,
     weekItems, stats, calibrationLines, headerLines, rowFromData, propFromData, propPrompt,

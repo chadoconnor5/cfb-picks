@@ -1,10 +1,10 @@
 {
  "_note": "Short names league members might use in picks (lowercase). Extend freely.",
  "North Carolina": ["unc", "carolina", "tar heels"], "NC State": ["ncsu", "nc st", "wolfpack"],
- "Alabama": ["bama", "ala"], "Tennessee": ["tenn", "vols"], "Missouri": ["mizzou", "mizz"],
+ "Alabama": ["bama", "ala"], "Tennessee": ["tenn", "vols"], "Missouri": ["mizzou", "mizz", "mizzu"],
  "Mississippi State": ["miss st", "miss state", "msu bulldogs"], "Ole Miss": ["olemiss", "rebels"],
  "Washington State": ["wazzu", "wsu", "wash st"], "Oregon State": ["osu beavers", "oregon st", "beavers"],
- "Syracuse": ["cuse"], "Vanderbilt": ["vandy"], "Arizona": ["zona"], "Arizona State": ["asu"],
+ "Syracuse": ["cuse"], "Vanderbilt": ["vandy"], "Arizona": ["zona", "ariz"], "Arizona State": ["asu"],
  "Northern Illinois": ["niu"], "Western Michigan": ["wmu", "western mich", "w mich"], "Central Michigan": ["cmu", "central mich", "c mich"],
  "Eastern Michigan": ["emu"], "James Madison": ["jmu"], "Western Kentucky": ["wku"], "Middle Tennessee": ["mtsu"],
  "Old Dominion": ["odu"], "Florida Atlantic": ["fau"], "Florida International": ["fiu"], "Notre Dame": ["nd", "irish"],
@@ -13,11 +13,13 @@
  "California": ["cal"], "Miami": ["the u", "miami fl"], "Miami (OH)": ["miami oh", "miami ohio"],
  "Southern California": ["usc"], "USC": ["usc", "trojans"], "UCLA": ["bruins"], "Texas Tech": ["ttu", "tech"],
  "Georgia Tech": ["gt"], "Virginia Tech": ["vt", "hokies"], "Boston College": ["bc"], "Wake Forest": ["wake"],
- "Kansas State": ["k state", "ksu"], "Iowa State": ["isu", "cyclones"], "Oklahoma State": ["ok st", "okst"],
+ "Kansas State": ["k state", "ksu"], "Iowa State": ["isu", "cyclones", "iowa st"], "Oklahoma State": ["ok st", "okst"],
  "West Virginia": ["wvu"], "Louisiana Tech": ["la tech"], "North Dakota State": ["ndsu", "bison"],
  "Sacramento State": ["sac state", "sac st"], "San Diego State": ["sdsu"], "San José State": ["sjsu"], "Boise State": ["boise"],
  "Colorado State": ["csu"], "Fresno State": ["fresno"], "Utah State": ["usu"], "Texas State": ["txst"],
  "Appalachian State": ["app st", "app state"], "Coastal Carolina": ["coastal", "ccu"], "Georgia Southern": ["gaso"],
  "Brigham Young": ["byu"], "Wisconsin": ["wisc", "badgers"], "Indiana": ["iu", "hoosiers"], "Duke": ["blue devils"],
- "Louisiana State": ["lsu"], "LSU": ["tigers lsu"]
+ "Louisiana State": ["lsu"], "LSU": ["tigers lsu"],
+ "Kansas": ["ku", "jayhawks"], "Minnesota": ["minny", "gophers"], "Oklahoma": ["ok", "okla", "sooners"],
+ "Kentucky": ["kent", "uk"], "Arkansas": ["ark", "hogs"]
 }

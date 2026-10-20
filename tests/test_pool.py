@@ -243,3 +243,22 @@ def test_parse_card_short_names_and_answers_on_the_question_line():
     assert games[0]["my_ats"] == "home" and games[0]["my_ou"] == "over"
     assert [(p["n"], p["line"], p["my_pick"]) for p in parsed["props"]] == [(2, 2.5, "over"), (3, 150.5, "under")]
     assert parsed["props"][0]["question"].endswith("turnovers?")
+
+
+def test_which_questions_and_tiebreak_on_next_line():
+    text = ("Ohio State @ Texas (-1.5) o/u 48.5 *5 Point Game*\nBUCKEYES, U\n\nQuestions\n"
+            "2. Wake Forest and Purdue face off. Which QB will end the game with more passing yards? (Lopez or Browne)\nBROWNE\n"
+            "3. Mississippi State and Minnesota are both in the bottom half. Which team will have more rushing yards?\nMINNESOTA\n\n"
+            "Combined Score - \n318\n")
+    parsed = pool.parse_card(text)
+    assert parsed["tiebreaker"] == 318
+    wg = [{"id": 1, "home_team": "Texas", "away_team": "Ohio State"}, {"id": 2, "home_team": "Purdue", "away_team": "Wake Forest"},
+          {"id": 3, "home_team": "Minnesota", "away_team": "Mississippi State"}]
+    assert pool.match_games(parsed["games"], wg)[0]["my_ats"] == "away"
+    q2, q3 = [pool.interpret_prop(p, wg) for p in parsed["props"]]
+    assert (q2["scope"], q2["choices"], q2["my_pick"]) == ("choice", ["Lopez", "Browne"], "Browne")
+    assert (q3["scope"], q3["stat"], q3["my_pick"]) == ("compare", "rush_yds", "Minnesota")
+    assert set(q3["choices"]) == {"Minnesota", "Mississippi State"}
+    box = {(3, "Minnesota"): {"rush_yds": 180}, (3, "Mississippi State"): {"rush_yds": 120}}
+    assert pool.prop_actual(q3, box) == "Minnesota" and pool.grade_prop("Minnesota", None, "Minnesota") == "W"
+    assert pool.prop_actual(q2, box) is None and pool.grade_prop("Lopez", None, "Browne") == "L"

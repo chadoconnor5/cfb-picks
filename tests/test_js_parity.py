@@ -70,7 +70,12 @@ def test_parse_card_match_and_props():
     variants = [CARD, CARD.replace("Ohio State, U", "OHIO ST, O"), CARD.replace("(+3.5)", "(PK)"),
                 CARD.replace("DUKE, U", "UNC, U").replace("yards?\nOVER", "yards? OVER").replace("sacks against Arizona State?\nUNDER", "sacks against Arizona State? UNDER"),
                 "Ohio State @ Indiana (+3.5) o/u 50.5 *5 Point Game*\nMississippi State @ LSU (-11.5) o/u 58.5\n"
-                "Questions\n1. Will they rush for over or under 150.5 yards?\nCombined Score -"]
+                "Questions\n1. Will they rush for over or under 150.5 yards?\nCombined Score -",
+                "Ohio State @ Indiana (+3.5) o/u 50.5\nBUCKEYES, U\nQuestions\n"
+                "1. Ohio State and Indiana meet again. Which team will have more rushing yards?\nINDIANA\n"
+                "2. Which QB will end the game with more passing yards? (Sayin or Mendoza)\nmendoza\n"
+                "3. Will Indiana and Ohio State combine for over or under 2.5 turnovers? UNDER\n"
+                "Combined Score - \n318"]
     wg = week_games(7)
     calls = []
     expected = []
@@ -83,7 +88,7 @@ def test_parse_card_match_and_props():
         calls.append(("matchGames", [parsed["games"], wg, REF, NICK]))
         for p in parsed["props"]:
             expected.append(pool.interpret_prop(p, wg, REF))
-            calls.append(("interpretProp", [p, wg, REF]))
+            calls.append(("interpretProp", [p, wg, REF, NICK]))
     res = js(calls)
     for exp, got, call in zip(expected, res, calls):
         assert got["ok"], got

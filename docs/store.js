@@ -52,7 +52,23 @@
   }
 
   // ids that can't collide between devices
-  const newId = () => Date.now() * 100 + Math.floor(Math.random() * 100);
+  // Never the same twice on this device (several items are made in the same millisecond)
+  let lastId = 0;
+  const newId = () => (lastId = Math.max(lastId + 1, Date.now() * 100 + Math.floor(Math.random() * 100)));
+
+  // Earlier versions could give two items (or two league entries) the same id, which hid one of them from the
+  // league sheet import and could send a pick to the wrong game. Give every repeat a new id.
+  function fixIds() {
+    const seen = new Set();
+    let changed = false;
+    const check = (o) => {
+      if (seen.has(o.id)) { o.id = newId(); changed = true; }
+      seen.add(o.id);
+    };
+    for (const c of Object.values(S.cards || {})) for (const it of c.items || []) check(it);
+    for (const m of Object.values(S.entries || {})) for (const e of Object.values(m)) check(e);
+    if (changed) save();
+  }
   const cardKey = (season, week, type) => `${season}|${type || "regular"}|${week}`;
   const nowIso = () => new Date().toISOString();
   const minuteIso = () => new Date().toISOString().slice(0, 16) + "+00:00";
@@ -496,10 +512,10 @@
     const refAll = await reference(season), ref = refAll.fbs;
     const wg = wd.games.map((g) => ({ id: g.id, home_team: g.home_team, away_team: g.away_team }));
     L.matchGames(parsed.games, wg, ref, refAll.nicknames);
-    const props = parsed.props.map((p) => L.interpretProp(p, wg, ref));
+    const props = parsed.props.map((p) => L.interpretProp(p, wg, ref, refAll.nicknames));
     const key = cardKey(season, week, type);
     const old = S.cards[key];
-    if (old && pastDeadline(old)) return fillLockedCard(old, parsed.games, props);
+    if (old && pastDeadline(old)) return fillLockedCard(old, parsed, props, refAll);
     const card = { id: old ? old.id : newId(), season, week, season_type: type, raw: text, has_tiebreaker: parsed.has_tiebreaker,
                    tiebreaker: parsed.tiebreaker, deadline: (old && old.deadline) || wd.deadline, items: [] };
     let idx = 0;
@@ -520,8 +536,10 @@
 
   // A locked week (e.g. made from the league sheet, which has no question text) only takes what's missing from
   // the email: question text and over/under numbers, and empty picks. Items, lines and league entries stay as they are.
-  function fillLockedCard(card, games, props) {
+  function fillLockedCard(card, parsed, props, ref) {
+    const games = parsed.games;
     let filled = 0;
+    if (card.tiebreaker == null && parsed.tiebreaker != null) { card.tiebreaker = parsed.tiebreaker; card.has_tiebreaker = true; filled++; }
     const unmatched = [];
     for (const p of props) {
       const it = card.items.find((x) => x.kind === "prop" && x.data.n === p.n);
@@ -531,6 +549,10 @@
         filled++;
       }
       if (!it.my_prop && p.my_pick) { it.my_prop = p.my_pick; filled++; }
+      for (const e of Object.values(S.entries[cardKey(card.season, card.week, card.season_type)] || {})) {
+        const pk = e.picks && e.picks[String(it.idx)];
+        if (pk && pk.raw !== undefined) pk.pick = propPick(it, pk.raw, ref);
+      }
     }
     for (const g of games) {
       const it = g.game_id == null ? null : card.items.find((x) => x.kind !== "prop" && x.data.game_id === g.game_id);
@@ -541,6 +563,16 @@
     }
     save();
     return { ok: true, card_id: card.id, games: games.length, props: props.length, unmatched, filled_locked: filled };
+  }
+
+  const ouOf = (v) => { const t = (v || "").trim().toLowerCase(); return t.startsWith("o") ? "over" : t.startsWith("u") ? "under" : null; };
+
+  // A league sheet answer -> a pick: over/under, or one of a "which ...?" question's two answers. Until the question
+  // is known (a week made from the sheet has only "Q2"), it's left unread; pasting the email reads it again.
+  function propPick(it, raw, ref) {
+    if (!raw) return null;
+    if (it.data.choices) return L.choiceOf(raw, it.data.choices, ref.fbs, ref.nicknames);
+    return ouOf(raw);
   }
 
   async function newCard(b) {
@@ -615,7 +647,7 @@
     if (lockedItem(card, g) && b.fix !== true) err("Picks are locked for this game (pool deadline or kickoff passed).");
     if (it.kind === "prop") {
       const v = b.pick === undefined ? null : b.pick;
-      if (![null, "over", "under"].includes(v)) err("pick must be over or under");
+      if (![null, ...(it.data.choices || ["over", "under"])].includes(v)) err(it.data.choices ? "Pick one of the two answers." : "pick must be over or under");
       it.my_prop = v;
     } else {
       const ats = b.ats === undefined ? null : b.ats, ou = b.ou === undefined ? null : b.ou;
@@ -642,7 +674,11 @@
   function setPropActual(itemId, b) {
     const [it] = itemById(itemId);
     if (it.kind !== "prop") err("Only questions take a manual result.");
-    it.prop_actual_manual = numField(b, "value");
+    if (it.data.choices) {
+      const v = b.value === undefined || b.value === "" ? null : b.value;
+      if (v !== null && v !== "tie" && !it.data.choices.includes(v)) err("Pick one of the two answers.");
+      it.prop_actual_manual = v;
+    } else it.prop_actual_manual = numField(b, "value");
     save();
     return { ok: true };
   }
@@ -677,6 +713,7 @@
     const replay = pastDeadline(card);
     return sortedItems(card).filter((it) => {
       if (only && !only.has(it.id)) return false;
+      if (it.kind === "prop" && it.data.choices) return false;   // "which ...?" questions: Claude answers over/under only
       const g = wd.byId[it.data.game_id];
       return g && (replay || !kickedOff(g));
     });
@@ -985,7 +1022,7 @@
     });
     const propItems = {};
     for (const it of card.items) if (it.kind === "prop") propItems[it.data.n] = it;
-    const ouOf = (v) => { const t = (v || "").trim().toLowerCase(); return t.startsWith("o") ? "over" : t.startsWith("u") ? "under" : null; };
+    const tbCol = sheet.tiebreak_col;
     S.entries[key] = S.entries[key] || {};
     let count = 0;
     for (const pl of sheet.players) {
@@ -999,12 +1036,14 @@
       }
       for (const p of sheet.props) {
         const it = propItems[p.n];
-        if (it) picks[String(it.idx)] = { pick: ouOf(pl.cells[p.col]) };
+        const raw = (pl.cells[p.col] || "").trim();
+        if (it) picks[String(it.idx)] = { pick: propPick(it, raw, ref), raw };
       }
+      const tbCell = tbCol != null ? (pl.cells[tbCol] || "").trim() : "";
       const existing = Object.entries(S.entries[key]).find(([n]) => L.namesMatch(n, pl.name));
       if (existing && existing[0] !== pl.name) delete S.entries[key][existing[0]];
       S.entries[key][pl.name] = { id: existing ? existing[1].id : newId(), raw: pl.cells.join("\t"), picks,
-                                  tiebreaker: existing ? existing[1].tiebreaker : null,
+                                  tiebreaker: /^\d+$/.test(tbCell) ? parseInt(tbCell, 10) : existing ? existing[1].tiebreaker : null,
                                   reported_points: existing ? existing[1].reported_points : null, warnings: pw };
       if (pw.length) warnings.push(`${pl.name}: ${pw.join("; ")}`);
       // the owner's row also fills the Pool tab's picks when they're empty
@@ -1388,6 +1427,7 @@
   ];
 
   async function api(path, opts = {}) {
+    fixIds();
     const method = (opts.method || "GET").toUpperCase();
     const [p, qs] = path.split("?");
     const q = new URLSearchParams(qs || "");

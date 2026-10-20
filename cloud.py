@@ -189,6 +189,8 @@ def eligible(card, week, only=None):
     for it in sorted_items(card):
         if only and it["id"] not in only:
             continue
+        if it["kind"] == "prop" and it["data"].get("choices"):   # "which ...?" questions: Claude answers over/under only
+            continue
         g = week["byId"].get(d_id(it)) if week else None
         if g and (replay or not kicked_off(g)):
             out.append(it)

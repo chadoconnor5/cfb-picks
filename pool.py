@@ -26,6 +26,8 @@ PICK_RE = re.compile(r"^\s*(?P<team>[^,\n]+?)\s*(?:,\s*(?P<ou>O|U|Over|Under))?\
 QUESTION_RE = re.compile(r"^\s*(?P<n>\d+)[.)]\s*(?P<text>.+)$")
 ANSWER_RE = re.compile(r"^\s*(OVER|UNDER|O|U)\s*$", re.I)
 TRAIL_ANSWER_RE = re.compile(r"(?<=[?.)])\s*(OVER|UNDER|O|U)\s*$", re.I)   # "...turnovers? OVER" on one line
+SHORT_ANSWER_RE = re.compile(r"^(?!.*\?)\S+(?:\s+\S+){0,3}$")   # "BROWNE", "MISS ST." under a "which ...?" question
+CHOICES_RE = re.compile(r"\(\s*([^()]+?)\s+or\s+([^()]+?)\s*\)\s*\??\s*$", re.I)   # "... passing yards? (Lopez or Browne)"
 LINE_RE = re.compile(r"over\s+or\s+under\s+(?P<line>\d+(?:\.\d+)?)\s*(?P<unit>[a-z ]*)", re.I)
 COMBINED_RE = re.compile(r"\b(both teams|the teams|two teams|teams (?:to )?combine|combined between|total between|between (?:the|both) (?:two )?teams)\b")
 TIEBREAK_RE = re.compile(r"combined\s+score\s*[-:]?\s*(?P<n>\d+)?", re.I)
@@ -70,6 +72,9 @@ def parse_card(text):
         if tb and low.startswith("combined"):
             has_tiebreaker = True
             tiebreaker = int(tb.group("n")) if tb.group("n") else None
+            if tiebreaker is None and i + 1 < len(lines) and re.match(r"^\s*\d+\s*$", lines[i + 1]):
+                tiebreaker = int(lines[i + 1])
+                i += 1
             i += 1
             continue
 
@@ -96,13 +101,19 @@ def parse_card(text):
         if q and section == "props":
             text_parts = [q.group("text").strip()]
             j = i + 1
+            answer = None
             while j < len(lines) and lines[j].strip() and not QUESTION_RE.match(lines[j]) \
                     and not ANSWER_RE.match(lines[j]) and not lines[j].strip().lower().startswith(("mid", "combined")):
+                if re.search(r"[?)]$", text_parts[-1]) and SHORT_ANSWER_RE.match(lines[j].strip()):
+                    answer = lines[j].strip()
+                    j += 1
+                    break
                 text_parts.append(lines[j].strip())
                 j += 1
             qtext = " ".join(text_parts)
-            answer = None
-            if j < len(lines) and ANSWER_RE.match(lines[j]):
+            if answer is not None:
+                pass   # a "which ...?" answer stays as written; interpret_prop matches it to one of the choices
+            elif j < len(lines) and ANSWER_RE.match(lines[j]):
                 answer = "over" if lines[j].strip().upper().startswith("O") else "under"
                 j += 1
             elif TRAIL_ANSWER_RE.search(qtext):
@@ -110,9 +121,11 @@ def parse_card(text):
                 answer = "over" if ta.group(1).upper().startswith("O") else "under"
                 qtext = qtext[:ta.start()].rstrip()
             lm = LINE_RE.search(qtext)
+            cm = CHOICES_RE.search(qtext)
             props.append({"kind": "prop", "n": int(q.group("n")), "question": qtext,
                           "line": float(lm.group("line")) if lm else None,
-                          "unit": (lm.group("unit") or "").strip() if lm else "", "my_pick": answer})
+                          "unit": (lm.group("unit") or "").strip() if lm else "", "my_pick": answer,
+                          "choices": [cm.group(1).strip(), cm.group(2).strip()] if not lm and cm else None})
             i = j
             continue
         i += 1
@@ -186,8 +199,35 @@ def interpret_prop(prop, week_games, ref=None):
     opponent = None
     if game:
         opponent = game["away_team"] if team == game["home_team"] else game["home_team"]
+    scope, choices, my_pick = "combined" if combined else "team", None, prop.get("my_pick")
+    # "Which team will have more rushing yards?" / "Which QB ...? (Lopez or Browne)": pick one of two, no line
+    if prop.get("line") is None and (prop.get("choices") or re.search(r"\b(which|who)\b", low)):
+        pair = [team, opponent] if game else None
+        choices = prop.get("choices") or pair
+        if prop.get("choices") and pair:
+            m = [match_team(c, pair, ref) for c in prop["choices"]]
+            if m[0] and m[1] and m[0] != m[1]:
+                choices = m
+        scope = "compare" if choices and pair and stat and all(c in pair for c in choices) else "choice"
+        if choices and my_pick and my_pick not in ("over", "under"):
+            my_pick = choice_of(my_pick, choices, ref)
     return {**prop, "team": team, "opponent": opponent, "game_id": game["id"] if game else None,
-            "stat": stat, "scope": "combined" if combined else "team"}
+            "stat": stat, "scope": scope, "choices": choices, "my_pick": my_pick}
+
+
+def choice_of(text, choices, ref=None):
+    """A written answer ("MINNESOTA", "Miss St.", "browne") -> one of the question's two choices."""
+    if not text or not choices:
+        return None
+    hit = which_team(text, choices, ref)
+    if hit:
+        return hit
+    low = teams_mod.norm(text)
+    for c in choices:
+        n = teams_mod.norm(c)
+        if low and (n == low or n.startswith(low) or low.startswith(n) or n.split(" ")[-1] == low):
+            return c
+    return None
 
 
 # ---------- export + grading ----------
@@ -246,6 +286,14 @@ def prop_actual(prop, box):
     mine = box.get((prop["game_id"], prop["team"]))
     if not mine or mine.get(prop["stat"]) is None:
         return None
+    if prop["scope"] == "compare":   # the answer is the team with more ("tie" if even)
+        other = box.get((prop["game_id"], prop["opponent"]))
+        if not other or other.get(prop["stat"]) is None:
+            return None
+        a, b = mine[prop["stat"]], other[prop["stat"]]
+        return "tie" if a == b else prop["team"] if a > b else prop["opponent"]
+    if prop["scope"] == "choice":
+        return None
     if prop["scope"] == "combined":
         other = box.get((prop["game_id"], prop["opponent"]))
         if not other or other.get(prop["stat"]) is None:
@@ -255,6 +303,8 @@ def prop_actual(prop, box):
 
 
 def grade_prop(pick, line, actual):
+    if isinstance(actual, str):
+        return None if pick is None else "P" if actual == "tie" else "W" if pick == actual else "L"
     if pick not in ("over", "under") or line is None or actual is None:
         return None
     if actual == line:

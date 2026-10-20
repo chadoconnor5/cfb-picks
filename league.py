@@ -55,6 +55,8 @@ def _game_result(item, side, total_pick):
 
 def _prop_result(item, pick):
     actual, line = item.get("prop_actual"), item["data"].get("line")
+    if isinstance(actual, str):
+        return None if pick is None else "P" if actual == "tie" else "W" if pick == actual else "L"
     if pick not in ("over", "under") or actual is None or line is None:
         return None
     if actual == line:
@@ -330,7 +332,8 @@ def week_sheet(items, scored, entries, highlights):
     by_player = {e["player"]: e for e in entries}
     cols = [{"idx": it["idx"], "kind": it["kind"], "weight": it["data"].get("weight", 1),
              "label": f"Q{it['data'].get('n')}" if it["kind"] == "prop" else f"{it['data']['away']} @ {it['data']['home']}",
-             "line": ((f"O/U {it['data'].get('line')}" if it["data"].get("line") is not None else "line not set") if it["kind"] == "prop" else
+             "line": ((" or ".join(it["data"]["choices"]) if it["data"].get("choices") else
+                       f"O/U {it['data'].get('line')}" if it["data"].get("line") is not None else "line not set") if it["kind"] == "prop" else
                       f"{it['data']['home']} {it['data']['home_spread']:+g}" + (f", o/u {it['data']['total']:g}" if it["data"].get("total") is not None else ""))}
             for it in items]
     rows = []
