@@ -149,7 +149,7 @@ async function renderWeek(root) {
     el("div", { class: "actions" }, copyBtn),
     el("details", {}, el("summary", {}, "Show the reply text"), el("textarea", { readonly: true }, data.export)),
     el("div", { class: "actions" }, fix || "",
-      card.locked ? null : el("details", {}, el("summary", {}, "Paste a different email (replaces this week's card)"), importBox(root))));
+      el("details", {}, el("summary", {}, card.locked ? "Paste the pool email (fills in missing questions and picks)" : "Paste a different email (replaces this week's card)"), importBox(root))));
 }
 
 function seg(options, value, onPick, disabled, result) {
@@ -234,7 +234,8 @@ function importBox(root) {
   const btn = el("button", { class: "primary" }, "Import");
   btn.addEventListener("click", () => busy(btn, "Importing…", async () => {
     const r = await api("/api/pool/import", { method: "POST", body: { season: S.season, week: S.week, season_type: S.type, text: box.value } });
-    toast(`Imported ${r.games} games and ${r.props} questions.` + (r.unmatched.length ? ` Check: ${r.unmatched.join(", ")}` : ""), r.unmatched.length > 0);
+    const head = r.filled_locked !== undefined ? `Filled in ${r.filled_locked} missing question line${r.filled_locked === 1 ? "" : "s"} and picks.` : `Imported ${r.games} games and ${r.props} questions.`;
+    toast(head + (r.unmatched.length ? ` Check: ${r.unmatched.join(", ")}` : ""), r.unmatched.length > 0);
     await render();
   }));
   return el("div", { class: "empty-card" }, box, btn);

@@ -499,7 +499,7 @@
     const props = parsed.props.map((p) => L.interpretProp(p, wg, ref));
     const key = cardKey(season, week, type);
     const old = S.cards[key];
-    if (old && pastDeadline(old)) err("This week's picks are already locked (deadline passed).");
+    if (old && pastDeadline(old)) return fillLockedCard(old, parsed.games, props);
     const card = { id: old ? old.id : newId(), season, week, season_type: type, raw: text, has_tiebreaker: parsed.has_tiebreaker,
                    tiebreaker: parsed.tiebreaker, deadline: (old && old.deadline) || wd.deadline, items: [] };
     let idx = 0;
@@ -516,6 +516,31 @@
     const unmatched = parsed.games.filter((g) => !g.game_id).map((g) => `${g.away} @ ${g.home}`)
       .concat(props.filter((p) => !p.team || !p.stat).map((p) => `Question ${p.n}`));
     return { ok: true, card_id: card.id, games: parsed.games.length, props: props.length, unmatched };
+  }
+
+  // A locked week (e.g. made from the league sheet, which has no question text) only takes what's missing from
+  // the email: question text and over/under numbers, and empty picks. Items, lines and league entries stay as they are.
+  function fillLockedCard(card, games, props) {
+    let filled = 0;
+    const unmatched = [];
+    for (const p of props) {
+      const it = card.items.find((x) => x.kind === "prop" && x.data.n === p.n);
+      if (!it) { unmatched.push(`Question ${p.n}`); continue; }
+      if (it.data.line == null || !it.data.stat || !it.data.team) {
+        it.data = { ...p, line: it.data.line != null ? it.data.line : p.line, line_entered_at: it.data.line_entered_at || minuteIso() };
+        filled++;
+      }
+      if (!it.my_prop && p.my_pick) { it.my_prop = p.my_pick; filled++; }
+    }
+    for (const g of games) {
+      const it = g.game_id == null ? null : card.items.find((x) => x.kind !== "prop" && x.data.game_id === g.game_id);
+      if (!it) { unmatched.push(`${g.away} @ ${g.home}`); continue; }
+      const side = g.my_ats && it.data.flipped !== g.flipped ? (g.my_ats === "home" ? "away" : "home") : g.my_ats;
+      if (!it.my_ats && side) { it.my_ats = side; filled++; }
+      if (!it.my_ou && g.my_ou) { it.my_ou = g.my_ou; filled++; }
+    }
+    save();
+    return { ok: true, card_id: card.id, games: games.length, props: props.length, unmatched, filled_locked: filled };
   }
 
   async function newCard(b) {
