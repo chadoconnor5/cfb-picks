@@ -440,7 +440,8 @@ def pick_item(item_id):
         it, card = _card_for_item(conn, item_id)
         d = json.loads(it["data"])
         game = conn.execute("SELECT * FROM games WHERE id=?", (d.get("game_id"),)).fetchone() if d.get("game_id") else None
-        if _locked(card, game):
+        # fix: true fills in or corrects a pick after the lock (entering a past week)
+        if _locked(card, game) and body.get("fix") is not True:
             raise _err("Picks are locked for this game (pool deadline or kickoff passed).")
         if it["kind"] == "prop":
             v = body.get("pick")

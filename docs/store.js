@@ -586,7 +586,8 @@
     const [it, card] = itemById(itemId);
     const wd = await weekData(card.season, card.week, card.season_type);
     const g = wd && it.data.game_id != null ? wd.byId[it.data.game_id] : null;
-    if (lockedItem(card, g)) err("Picks are locked for this game (pool deadline or kickoff passed).");
+    // fix: true fills in or corrects a pick after the lock (entering a past week)
+    if (lockedItem(card, g) && b.fix !== true) err("Picks are locked for this game (pool deadline or kickoff passed).");
     if (it.kind === "prop") {
       const v = b.pick === undefined ? null : b.pick;
       if (![null, "over", "under"].includes(v)) err("pick must be over or under");

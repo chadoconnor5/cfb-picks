@@ -180,6 +180,10 @@ def test_manual_card_lines_deadline_and_market(client):
                  lambda: client.delete(f"/api/pool/items/{g['id']}")):
         r = call()
         assert r.status_code == 400 and "locked" in r.json["error"]
+    # ...but a missing pick can still be filled in on purpose (entering a past week)
+    assert client.post(f"/api/pool/items/{g['id']}/pick", json={"ats": "home", "ou": "under", "fix": True}).status_code == 200
+    g3 = client.get("/api/pool", query_string=WEEK).json["items"][0]
+    assert g3["my_ats"] == "home" and g3["my_ou"] == "under"
 
 
 def test_prompt_mentions_market_vs_pool():

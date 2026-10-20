@@ -1,7 +1,7 @@
 // CFB Picks: three tabs (This Week, Standings, More). All data work happens in store.js / logic.js.
 const $ = (sel, root = document) => root.querySelector(sel);
 const api = (path, opts) => Store.api(path, opts);
-const S = { season: null, week: null, type: "regular", tab: "week", standingsView: "week", editLines: false };
+const S = { season: null, week: null, type: "regular", tab: "week", standingsView: "week", editLines: false, fixPicks: false };
 
 // ---------- helpers ----------
 
@@ -107,7 +107,7 @@ async function renderWeek(root) {
   const owner = data.owner || "Ron";
   const first = owner.split(" ")[0];
   const pick = async (it, body) => {
-    try { await api(`/api/pool/items/${it.id}/pick`, { method: "POST", body }); await renderWeek(root); }
+    try { await api(`/api/pool/items/${it.id}/pick`, { method: "POST", body: S.fixPicks ? { ...body, fix: true } : body }); await renderWeek(root); }
     catch (e) { toast(e.message, true); }
   };
 
@@ -124,6 +124,11 @@ async function renderWeek(root) {
     sc.graded_possible ? el("div", { class: "scoreline" }, el("span", {}, `${first}: ${sc.points} pts`), el("span", { class: "muted" }, `Claude: ${sc.claude_points} pts`)) : null,
     items.some((it) => it.claude) || card.locked ? null : el("div", { class: "muted small" }, "Claude's picks will show here once Claude's research has been run."));
 
+  const missing = items.filter((it) => (it.kind === "prop" ? !it.my_prop : !it.my_ats || (it.kind === "game" && it.data.total != null && !it.my_ou))).length;
+  const fixPicks = items.some((it) => it.locked) ?
+    el("div", { class: "actions" }, el("button", { class: S.fixPicks ? "primary" : "" , onclick: () => { S.fixPicks = !S.fixPicks; renderWeek(root); } },
+      S.fixPicks ? "Done filling in picks" : `Fill in or fix ${first}'s picks`),
+      missing ? el("span", { class: "warnlist small" }, ` ${missing} pick${missing > 1 ? "s" : ""} missing (marked “no pick” below)`) : null) : null;
   const rows = items.map((it, i) => (it.kind === "prop" ? propItem(it, pick) : gameItem(it, pick, first)));
 
   const tbIn = el("input", { type: "number", inputmode: "numeric", value: card.tiebreaker ?? "", placeholder: data.projected_combined ?? "", disabled: card.locked });
@@ -140,7 +145,7 @@ async function renderWeek(root) {
   const fix = card.locked ? null : el("button", { class: "link" }, S.editLines ? "Done fixing lines" : "Fix a spread or total");
   if (fix) fix.addEventListener("click", () => { S.editLines = !S.editLines; renderWeek(root); });
 
-  root.replaceChildren(banner, ...rows, tiebreak || "",
+  root.replaceChildren(banner, fixPicks || "", ...rows, tiebreak || "",
     el("div", { class: "actions" }, copyBtn),
     el("details", {}, el("summary", {}, "Show the reply text"), el("textarea", { readonly: true }, data.export)),
     el("div", { class: "actions" }, fix || "",
@@ -160,8 +165,9 @@ function gameItem(it, pick, first) {
   const kick = g && g.start_date && !g.completed ? ` · ${when(g.start_date)}` : "";
   const hasTotal = d.total !== null && d.total !== undefined;
   const ron = el("div", { class: "row" }, el("span", { class: "who" }, first),
-    seg([["away", d.away], ["home", d.home]], it.my_ats, (v) => pick(it, { ats: v, ou: it.my_ou }), it.locked, it.ats_result),
-    hasTotal ? seg([["over", "Over"], ["under", "Under"]], it.my_ou, (v) => pick(it, { ats: it.my_ats, ou: v }), it.locked, it.ou_result) : null);
+    seg([["away", d.away], ["home", d.home]], it.my_ats, (v) => pick(it, { ats: v, ou: it.my_ou }), it.locked && !S.fixPicks, it.ats_result),
+    hasTotal ? seg([["over", "Over"], ["under", "Under"]], it.my_ou, (v) => pick(it, { ats: it.my_ats, ou: v }), it.locked && !S.fixPicks, it.ou_result) : null,
+    it.locked && (!it.my_ats || (hasTotal && it.kind === "game" && !it.my_ou)) ? el("span", { class: "warnlist small" }, "no pick") : null);
   let claude = null;
   if (c) {
     const team = c.ats_pick === "home" ? d.home : d.away;
@@ -188,7 +194,8 @@ function propItem(it, pick) {
     el("div", { class: "q-text" }, d.question),
     d.line == null ? el("div", { class: "warnlist small" }, "Over/under number missing: tap “Fix a spread or total” below.") : el("div", { class: "item-line" }, `Over/under ${d.line}`),
     el("div", { class: "row" }, el("span", { class: "who" }, "Pick"),
-      seg([["over", "Over"], ["under", "Under"]], it.my_prop, (v) => pick(it, { pick: v }), it.locked, it.prop_result)),
+      seg([["over", "Over"], ["under", "Under"]], it.my_prop, (v) => pick(it, { pick: v }), it.locked && !S.fixPicks, it.prop_result),
+      it.locked && !it.my_prop ? el("span", { class: "warnlist small" }, "no pick") : null),
     c ? el("div", { class: "row claude-row" }, el("span", { class: "who" }, "Claude"),
       el("span", {}, `${c.pick === "over" ? "Over" : "Under"} `, mark(it.claude_prop_result), el("span", { class: "muted small" }, ` · projects ${c.projection} · confidence ${c.confidence}`)),
       el("details", { class: "why" }, el("summary", {}, "why"), el("div", { class: "small" }, c.reasoning))) : null,
