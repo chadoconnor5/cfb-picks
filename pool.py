@@ -25,6 +25,7 @@ GAME_RE = re.compile(
 PICK_RE = re.compile(r"^\s*(?P<team>[^,\n]+?)\s*(?:,\s*(?P<ou>O|U|Over|Under))?\s*$", re.I)
 QUESTION_RE = re.compile(r"^\s*(?P<n>\d+)[.)]\s*(?P<text>.+)$")
 ANSWER_RE = re.compile(r"^\s*(OVER|UNDER|O|U)\s*$", re.I)
+TRAIL_ANSWER_RE = re.compile(r"(?<=[?.)])\s*(OVER|UNDER|O|U)\s*$", re.I)   # "...turnovers? OVER" on one line
 LINE_RE = re.compile(r"over\s+or\s+under\s+(?P<line>\d+(?:\.\d+)?)\s*(?P<unit>[a-z ]*)", re.I)
 COMBINED_RE = re.compile(r"\b(both teams|the teams|two teams|teams (?:to )?combine|combined between|total between|between (?:the|both) (?:two )?teams)\b")
 TIEBREAK_RE = re.compile(r"combined\s+score\s*[-:]?\s*(?P<n>\d+)?", re.I)
@@ -104,6 +105,10 @@ def parse_card(text):
             if j < len(lines) and ANSWER_RE.match(lines[j]):
                 answer = "over" if lines[j].strip().upper().startswith("O") else "under"
                 j += 1
+            elif TRAIL_ANSWER_RE.search(qtext):
+                ta = TRAIL_ANSWER_RE.search(qtext)
+                answer = "over" if ta.group(1).upper().startswith("O") else "under"
+                qtext = qtext[:ta.start()].rstrip()
             lm = LINE_RE.search(qtext)
             props.append({"kind": "prop", "n": int(q.group("n")), "question": qtext,
                           "line": float(lm.group("line")) if lm else None,
@@ -150,7 +155,7 @@ def match_games(card_games, week_games, ref=None):
                 cg["game_id"], cg["flipped"] = g["id"], True
         cg["cfbd_away"], cg["cfbd_home"] = a, h
         if cg.get("my_ats_team"):
-            pick = match_team(cg["my_ats_team"], [cg["away"], cg["home"]], ref) or \
+            pick = which_team(cg["my_ats_team"], [cg["away"], cg["home"]], ref) or \
                 (cg["away"] if cg["my_ats_team"].lower()[:4] in cg["away"].lower() else
                  cg["home"] if cg["my_ats_team"].lower()[:4] in cg["home"].lower() else None)
             cg["my_ats"] = "home" if pick == cg["home"] else "away" if pick == cg["away"] else None

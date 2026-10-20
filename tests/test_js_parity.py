@@ -68,6 +68,7 @@ def test_difflib_ratio_and_close_matches():
 
 def test_parse_card_match_and_props():
     variants = [CARD, CARD.replace("Ohio State, U", "OHIO ST, O"), CARD.replace("(+3.5)", "(PK)"),
+                CARD.replace("DUKE, U", "UNC, U").replace("yards?\nOVER", "yards? OVER").replace("sacks against Arizona State?\nUNDER", "sacks against Arizona State? UNDER"),
                 "Ohio State @ Indiana (+3.5) o/u 50.5 *5 Point Game*\nMississippi State @ LSU (-11.5) o/u 58.5\n"
                 "Questions\n1. Will they rush for over or under 150.5 yards?\nCombined Score -"]
     wg = week_games(7)
@@ -79,7 +80,7 @@ def test_parse_card_match_and_props():
         calls.append(("parseCard", [text]))
         games = copy.deepcopy(parsed["games"])
         expected.append(pool.match_games(games, wg, REF))
-        calls.append(("matchGames", [parsed["games"], wg, REF]))
+        calls.append(("matchGames", [parsed["games"], wg, REF, NICK]))
         for p in parsed["props"]:
             expected.append(pool.interpret_prop(p, wg, REF))
             calls.append(("interpretProp", [p, wg, REF]))

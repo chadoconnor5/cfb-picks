@@ -493,9 +493,9 @@
     const parsed = L.parseCard(text);
     if (!parsed.games.length) err("No games found. Lines should look like: Ohio State @ Indiana (+3.5) o/u 50.5");
     const wd = await needWeek(season, week, type);
-    const ref = (await reference(season)).fbs;
+    const refAll = await reference(season), ref = refAll.fbs;
     const wg = wd.games.map((g) => ({ id: g.id, home_team: g.home_team, away_team: g.away_team }));
-    L.matchGames(parsed.games, wg, ref);
+    L.matchGames(parsed.games, wg, ref, refAll.nicknames);
     const props = parsed.props.map((p) => L.interpretProp(p, wg, ref));
     const key = cardKey(season, week, type);
     const old = S.cards[key];

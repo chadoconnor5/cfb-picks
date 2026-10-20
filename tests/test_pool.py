@@ -232,3 +232,14 @@ def test_replay_after_deadline_is_strict(client, monkeypatch):
     assert ctx["injuries"]["report"].startswith("OSU RB out")
     assert any("cutoff" in a for a in ctx["audit"])
     assert seen["game"]["spread"] == 3.5                              # predicted against the POOL line
+
+
+def test_parse_card_short_names_and_answers_on_the_question_line():
+    text = ("Colorado @ Georgia Tech (-6.5) o/u 50.5 Thursday\nGT,  O\n"
+            "Questions\n2. Will the teams combine for over or under 2.5 turnovers? OVER\n\n"
+            "3. Will their team combine for over or under 150.5 rushing yards against Wisconsin? under\n")
+    parsed = pool.parse_card(text)
+    games = pool.match_games(parsed["games"], [{"id": 1, "home_team": "Georgia Tech", "away_team": "Colorado"}])
+    assert games[0]["my_ats"] == "home" and games[0]["my_ou"] == "over"
+    assert [(p["n"], p["line"], p["my_pick"]) for p in parsed["props"]] == [(2, 2.5, "over"), (3, 150.5, "under")]
+    assert parsed["props"][0]["question"].endswith("turnovers?")

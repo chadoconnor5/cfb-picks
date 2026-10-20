@@ -135,6 +135,7 @@
   const PICK_RE = /^\s*(?<team>[^,\n]+?)\s*(?:,\s*(?<ou>O|U|Over|Under))?\s*$/i;
   const QUESTION_RE = /^\s*(?<n>\d+)[.)]\s*(?<text>.+)$/;
   const ANSWER_RE = /^\s*(OVER|UNDER|O|U)\s*$/i;
+  const TRAIL_ANSWER_RE = /(?<=[?.)])\s*(OVER|UNDER|O|U)\s*$/i;   // "...turnovers? OVER" on one line
   const LINE_RE = /over\s+or\s+under\s+(?<line>\d+(?:\.\d+)?)\s*(?<unit>[a-z ]*)/i;
   const COMBINED_RE = /\b(both teams|the teams|two teams|teams (?:to )?combine|combined between|total between|between (?:the|both) (?:two )?teams)\b/;
   const TIEBREAK_RE = /combined\s+score\s*[-:]?\s*(?<n>\d+)?/i;
@@ -201,11 +202,15 @@
           parts.push(lines[j].trim());
           j++;
         }
-        const qtext = parts.join(" ");
+        let qtext = parts.join(" ");
         let answer = null;
         if (j < lines.length && ANSWER_RE.test(lines[j])) {
           answer = lines[j].trim().toUpperCase().startsWith("O") ? "over" : "under";
           j++;
+        } else if (TRAIL_ANSWER_RE.test(qtext)) {
+          const ta = TRAIL_ANSWER_RE.exec(qtext);
+          answer = ta[1].toUpperCase().startsWith("O") ? "over" : "under";
+          qtext = qtext.slice(0, ta.index).replace(/\s+$/, "");
         }
         const lm = LINE_RE.exec(qtext);
         props.push({ kind: "prop", n: parseInt(q.groups.n, 10), question: qtext,
@@ -233,7 +238,7 @@
     return null;
   }
 
-  function matchGames(cardGames, weekGames, ref) {
+  function matchGames(cardGames, weekGames, ref, nick) {
     const names = [...new Set(weekGames.flatMap((g) => [g.home_team, g.away_team]))].sort();
     for (const cg of cardGames) {
       const a = matchTeam(cg.away, names, ref), h = matchTeam(cg.home, names, ref);
@@ -245,7 +250,7 @@
       cg.cfbd_away = a; cg.cfbd_home = h;
       if (cg.my_ats_team) {
         const t4 = cg.my_ats_team.toLowerCase().slice(0, 4);
-        const pick = matchTeam(cg.my_ats_team, [cg.away, cg.home], ref) ||
+        const pick = whichTeam(cg.my_ats_team, [cg.away, cg.home], ref, nick) ||
           (cg.away.toLowerCase().includes(t4) ? cg.away : cg.home.toLowerCase().includes(t4) ? cg.home : null);
         cg.my_ats = pick === cg.home ? "home" : pick === cg.away ? "away" : null;
       }
