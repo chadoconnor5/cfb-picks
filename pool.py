@@ -190,10 +190,11 @@ def interpret_prop(prop, week_games, ref=None):
     for g in week_games:
         for t in (g["home_team"], g["away_team"]):
             variants = {t, teams_mod.canonical(t, ref)} | set((ref or {}).get("aliases", {}).get(teams_mod.canonical(t, ref), []))
-            pos = min((low.find(v.lower()) for v in variants if low.find(v.lower()) >= 0), default=-1)
-            if pos >= 0:
-                found.append((pos, t, g))
-    found.sort(key=lambda x: x[0])
+            hits = [(low.find(v.lower()), len(v)) for v in variants if low.find(v.lower()) >= 0]
+            if hits:
+                pos = min(p for p, _ in hits)
+                found.append((pos, t, g, max(n for p, n in hits if p == pos)))
+    found.sort(key=lambda x: (x[0], -x[3]))   # "Texas Tech" beats "Texas" at the same spot
     team = found[0][1] if found else None
     game = found[0][2] if found else None
     opponent = None

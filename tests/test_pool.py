@@ -262,3 +262,14 @@ def test_which_questions_and_tiebreak_on_next_line():
     box = {(3, "Minnesota"): {"rush_yds": 180}, (3, "Mississippi State"): {"rush_yds": 120}}
     assert pool.prop_actual(q3, box) == "Minnesota" and pool.grade_prop("Minnesota", None, "Minnesota") == "W"
     assert pool.prop_actual(q2, box) is None and pool.grade_prop("Lopez", None, "Browne") == "L"
+
+
+def test_prop_prefers_the_longer_team_name():
+    wg = [{"id": 1, "home_team": "Texas", "away_team": "Florida"}, {"id": 2, "home_team": "Texas Tech", "away_team": "Arizona State"},
+          {"id": 3, "home_team": "Purdue", "away_team": "Washington"}, {"id": 4, "home_team": "Oregon State", "away_team": "Washington State"}]
+    q = pool.interpret_prop({"kind": "prop", "n": 1, "question": "Texas Tech is undefeated. Will they register over or under 2.5 sacks?",
+                             "line": 2.5, "unit": "", "my_pick": None}, wg)
+    assert (q["team"], q["game_id"]) == ("Texas Tech", 2)
+    q = pool.interpret_prop({"kind": "prop", "n": 2, "question": "Washington State travels to Oregon State. Will the teams combine for "
+                             "over or under 700.5 total yards?", "line": 700.5, "unit": "", "my_pick": None}, wg)
+    assert (q["team"], q["game_id"]) == ("Washington State", 4)

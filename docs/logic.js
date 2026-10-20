@@ -278,12 +278,13 @@
       for (const t of [g.home_team, g.away_team]) {
         const canon = canonical(t, ref);
         const variants = new Set([t, canon, ...(((ref || {}).aliases || {})[canon] || [])]);
-        const positions = [...variants].map((v) => low.indexOf(v.toLowerCase())).filter((p) => p >= 0);
-        const pos = positions.length ? Math.min(...positions) : -1;
-        if (pos >= 0) found.push([pos, t, g]);
+        const hits = [...variants].map((v) => [low.indexOf(v.toLowerCase()), v.length]).filter(([p]) => p >= 0);
+        if (!hits.length) continue;
+        const pos = Math.min(...hits.map(([p]) => p));
+        found.push([pos, t, g, Math.max(...hits.filter(([p]) => p === pos).map(([, n]) => n))]);
       }
     }
-    found.sort((x, y) => x[0] - y[0]);
+    found.sort((x, y) => x[0] - y[0] || y[3] - x[3]);   // "Texas Tech" beats "Texas" at the same spot
     const team = found.length ? found[0][1] : null;
     const game = found.length ? found[0][2] : null;
     let opponent = null;
