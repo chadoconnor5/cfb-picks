@@ -14,6 +14,11 @@ on:
         description: "Extra regular-season weeks to (re)build, e.g. 7 or 6,7 (optional)"
         required: false
         default: ""
+      replay:
+        description: "Past weeks with no analytics: build them as of their pick deadline (blind replay)"
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: write
@@ -48,7 +53,7 @@ jobs:
         env:
           CFBD_API_KEY: ${{ secrets.CFBD_KEY }}
           PYTHONUNBUFFERED: "1"
-        run: python build_site.py --weeks "${{ github.event.inputs.weeks }}"
+        run: python build_site.py --weeks "${{ github.event.inputs.weeks }}" ${{ github.event.inputs.replay == 'true' && '--replay' || '' }}
 
       # Saved even if the build fails or times out, so a long first download is never repeated.
       - name: Save cache
